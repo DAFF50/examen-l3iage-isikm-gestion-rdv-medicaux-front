@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -37,7 +37,7 @@
 }
 
 .logo {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -232,7 +232,7 @@ input.error, select.error, textarea.error {
 
 /* Bouton de soumission */
 .submit-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);
   color: white;
   border: none;
   padding: 16px 32px;
