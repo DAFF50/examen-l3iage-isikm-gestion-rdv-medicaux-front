@@ -302,3 +302,7 @@ body.dark .main-content .text {
 }
 
 
+.text {
+  color: var(--text2-color);
+  transition: var(--tran-05);
+}

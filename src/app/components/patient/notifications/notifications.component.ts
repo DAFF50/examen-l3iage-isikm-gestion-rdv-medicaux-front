@@ -7,4 +7,10 @@ import { Component } from '@angular/core';
 })
 export class NotificationsComponent {
 
+  // Gestion des filtres
+  activeFilter: string = 'toutes';
+
+  setFilter(filter: string) {
+    this.activeFilter = filter;
+  }
 }

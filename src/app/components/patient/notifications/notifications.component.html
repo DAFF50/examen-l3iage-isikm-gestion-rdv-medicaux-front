@@ -1,1 +1,243 @@
-<p>notifications works!</p>
+<div class="container">
+
+
+  <!-- Filtres -->
+  <div class="notifications-filter">
+    <button
+      class="filter-btn"
+      [class.active]="activeFilter === 'toutes'"
+      (click)="setFilter('toutes')">Toutes (8)
+    </button>
+
+    <button
+      class="filter-btn"
+      [class.active]="activeFilter === 'rdv'"
+      (click)="setFilter('rdv')">Rendez-vous (3)
+    </button>
+
+    <button
+      class="filter-btn"
+      [class.active]="activeFilter === 'paiements'"
+      (click)="setFilter('paiements')">Paiements (2)
+    </button>
+    <button
+      class="filter-btn"
+      [class.active]="activeFilter === 'rappels'"
+      (click)="setFilter('rappels')">Rappels (2
+    </button>
+    <button
+      class="filter-btn"
+      [class.active]="activeFilter === 'système'"
+      (click)="setFilter('système')">Système (1)
+    </button>
+  </div>
+
+  <!-- Liste des notifications -->
+  <div class="notifications-list">
+    <!-- Notification 1: Nouveau RDV confirmé -->
+    <div class="notification appointment unread">
+      <div class="priority-badge priority-high">Urgent</div>
+      <div class="notification-header">
+        <div class="notification-icon icon-appointment">📅</div>
+        <div class="notification-content">
+          <div class="notification-title">Rendez-vous confirmé</div>
+          <div class="notification-message">
+            Votre rendez-vous avec le Dr. Aminata FALL a été confirmé et approuvé.
+          </div>
+          <div class="notification-details">
+            <strong>Date:</strong> Lundi 2 Septembre 2025 à 14h30<br>
+            <strong>Spécialité:</strong> Cardiologie<br>
+            <strong>Lieu:</strong> Cabinet médical - Dakar<br>
+            <strong>Statut:</strong> Payé en ligne (15,000 FCFA)
+          </div>
+        </div>
+      </div>
+      <div class="notification-footer">
+        <span class="notification-time">Il y a 5 minutes</span>
+        <div class="notification-actions">
+          <button class="action-btn btn-primary">Télécharger PDF</button>
+          <button class="action-btn btn-secondary">Voir détails</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification 2: Rappel RDV -->
+    <div class="notification reminder">
+      <div class="notification-header">
+        <div class="notification-icon icon-reminder">⏰</div>
+        <div class="notification-content">
+          <div class="notification-title">Rappel de rendez-vous</div>
+          <div class="notification-message">
+            N'oubliez pas votre rendez-vous avec le Dr. Moussa DIOP demain à 10h00.
+          </div>
+          <div class="notification-details">
+            <strong>Date:</strong> Demain, 31 Août 2025 à 10h00<br>
+            <strong>Spécialité:</strong> Pédiatrie<br>
+            <strong>Lieu:</strong> Clinique Saint-Joseph - Pikine<br>
+            <strong>À apporter:</strong> Carnet de santé, ordonnances précédentes
+          </div>
+        </div>
+      </div>
+      <div class="notification-footer">
+        <span class="notification-time">Il y a 2 heures</span>
+        <div class="notification-actions">
+          <button class="action-btn btn-success">Confirmer présence</button>
+          <button class="action-btn btn-secondary">Reporter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification 3: Paiement réussi -->
+    <div class="notification payment">
+      <div class="notification-header">
+        <div class="notification-icon icon-payment">💳</div>
+        <div class="notification-content">
+          <div class="notification-title">Paiement réussi</div>
+          <div class="notification-message">
+            Votre paiement de 20,000 FCFA pour le rendez-vous avec Dr. Omar SECK a été traité avec succès.
+          </div>
+          <div class="notification-details">
+            <strong>Montant:</strong> 20,000 FCFA<br>
+            <strong>Méthode:</strong> Carte bancaire (**** 1234)<br>
+            <strong>Référence:</strong> PAY-2025-08-30-001<br>
+            <strong>Date:</strong> 30 Août 2025, 16h45
+          </div>
+        </div>
+      </div>
+      <div class="notification-footer">
+        <span class="notification-time">Hier à 16h45</span>
+        <div class="notification-actions">
+          <button class="action-btn btn-primary">Reçu PDF</button>
+          <button class="action-btn btn-secondary">Contester</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification 4: RDV annulé -->
+    <div class="notification cancellation">
+      <div class="notification-header">
+        <div class="notification-icon icon-cancellation">❌</div>
+        <div class="notification-content">
+          <div class="notification-title">Rendez-vous annulé</div>
+          <div class="notification-message">
+            Votre rendez-vous avec Dr. Fatou NDIAYE du 28 Août a été annulé par le médecin pour cause d'urgence.
+          </div>
+          <div class="notification-details">
+            <strong>RDV annulé:</strong> 28 Août 2025 à 15h00<br>
+            <strong>Motif:</strong> Urgence médicale<br>
+            <strong>Remboursement:</strong> 12,000 FCFA (en cours)<br>
+            <strong>Délai:</strong> 3-5 jours ouvrables
+          </div>
+        </div>
+      </div>
+      <div class="notification-footer">
+        <span class="notification-time">Il y a 2 jours</span>
+        <div class="notification-actions">
+          <button class="action-btn btn-primary">Reprendre RDV</button>
+          <button class="action-btn btn-secondary">Contacter support</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification 5: Nouveau crédit disponible -->
+    <div class="notification confirmation unread">
+      <div class="notification-header">
+        <div class="notification-icon icon-confirmation">✅</div>
+        <div class="notification-content">
+          <div class="notification-title">Remboursement effectué</div>
+          <div class="notification-message">
+            Le remboursement de votre rendez-vous annulé a été crédité sur votre compte.
+          </div>
+          <div class="notification-details">
+            <strong>Montant:</strong> 12,000 FCFA<br>
+            <strong>Méthode:</strong> Retour sur carte bancaire<br>
+            <strong>Délai:</strong> 2-3 jours pour apparition sur relevé<br>
+            <strong>Référence:</strong> REF-2025-08-29-456
+          </div>
+        </div>
+      </div>
+      <div class="notification-footer">
+        <span class="notification-time">Il y a 3 jours</span>
+        <div class="notification-actions">
+          <button class="action-btn btn-secondary">Marquer comme lu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification 6: Résultats analyses -->
+    <div class="notification system">
+      <div class="notification-header">
+        <div class="notification-icon icon-system">📋</div>
+        <div class="notification-content">
+          <div class="notification-title">Résultats d'analyses disponibles</div>
+          <div class="notification-message">
+            Vos résultats d'analyses sanguines prescrits par Dr. Aminata FALL sont maintenant disponibles.
+          </div>
+          <div class="notification-details">
+            <strong>Analyses:</strong> Bilan lipidique complet<br>
+            <strong>Date prélèvement:</strong> 25 Août 2025<br>
+            <strong>Laboratoire:</strong> Lab Central Dakar<br>
+            <strong>À consulter avec:</strong> Dr. Aminata FALL
+          </div>
+        </div>
+      </div>
+      <div class="notification-footer">
+        <span class="notification-time">Il y a 5 jours</span>
+        <div class="notification-actions">
+          <button class="action-btn btn-primary">Télécharger</button>
+          <button class="action-btn btn-secondary">Partager</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification 7: Mise à jour profil -->
+    <div class="notification system">
+      <div class="notification-header">
+        <div class="notification-icon icon-system">⚙️</div>
+        <div class="notification-content">
+          <div class="notification-title">Profil mis à jour</div>
+          <div class="notification-message">
+            Vos informations personnelles ont été mises à jour avec succès.
+          </div>
+          <div class="notification-details">
+            <strong>Modifications:</strong> Numéro de téléphone<br>
+            <strong>Ancien:</strong> +221 77 xxx xx xx<br>
+            <strong>Nouveau:</strong> +221 78 xxx xx xx<br>
+            <strong>Date:</strong> 20 Août 2025
+          </div>
+        </div>
+      </div>
+      <div class="notification-footer">
+        <span class="notification-time">Il y a 1 semaine</span>
+      </div>
+    </div>
+
+    <!-- Notification 8: Promotion/Offre -->
+    <div class="notification system">
+      <div class="notification-header">
+        <div class="notification-icon icon-system">🎉</div>
+        <div class="notification-content">
+          <div class="notification-title">Offre spéciale - Consultation gratuite</div>
+          <div class="notification-message">
+            Bénéficiez d'une consultation gratuite avec nos médecins partenaires pour votre fidélité !
+          </div>
+          <div class="notification-details">
+            <strong>Validité:</strong> Jusqu'au 15 Septembre 2025<br>
+            <strong>Spécialités:</strong> Médecine générale, Dermatologie<br>
+            <strong>Code promo:</strong> FIDELE2025<br>
+            <strong>Conditions:</strong> Premier rendez-vous uniquement
+          </div>
+        </div>
+      </div>
+      <div class="notification-footer">
+        <span class="notification-time">Il y a 2 semaines</span>
+        <div class="notification-actions">
+          <button class="action-btn btn-success">Utiliser l'offre</button>
+          <button class="action-btn btn-secondary">Plus tard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>

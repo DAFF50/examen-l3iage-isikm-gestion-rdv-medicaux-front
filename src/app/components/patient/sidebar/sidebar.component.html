@@ -17,33 +17,33 @@
       </li>
 
       <li class="nav-link">
-        <a href="#">
+        <a routerLink="/patient/dashboard">
           <i class='bx bx-home-alt icon'></i>
           <span class="text nav-text">tableau de bord</span>
         </a>
       </li>
       <!-- Ajoute les autres liens ici -->
       <li class="nav-link">
-        <a href="#">
+        <a routerLink="/patient/take-appointment">
           <i class='bx bx-calendar icon'></i>
           <span class="text nav-text">Prendre rendez-vous</span>
         </a>
       </li>
 
       <li class="nav-link">
-        <a href="#">
+        <a routerLink="/patient/my-appointments">
           <i class='bx bx-calendar-check icon'></i>
           <span class="text nav-text">Mes rendez-vous</span>
         </a>
       </li>
       <li class="nav-link">
-        <a href="#">
+        <a routerLink="/patient/notification">
           <i class='bx bx-bell icon'></i>
           <span class="text nav-text">Notifications</span>
         </a>
       </li>
       <li class="nav-link">
-        <a href="#">
+        <a routerLink="/patient/chat_ai">
           <i class='bx bx-chat icon'></i>
           <span class="text nav-text">Chat IA</span>
         </a>
@@ -74,5 +74,5 @@
   <div class="content-wrapper">
     <div class="text">Tableau de bord - Docto RDV</div>
   </div>
-  <app-chat-ai></app-chat-ai>
+  <router-outlet></router-outlet>
 </section>

@@ -8,6 +8,12 @@
   overflow: hidden;
 }
 
+.container {
+  width: 100%;
+  padding: 0 20px; /* optionnel si tu veux respirer un peu */
+  box-sizing: border-box;
+}
+
 .chat-messages {
   flex: 1;
   padding: 16px;
