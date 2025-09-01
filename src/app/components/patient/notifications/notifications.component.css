@@ -331,3 +331,32 @@ body {
     align-items: flex-start;
   }
 }
+
+
+.header {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+
+}
+
+.header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+
+  gap: 0.75rem;
+  color: #ffffff;
+}
+
+.header p {
+  color: #ffffff;
+}
+
+
+
+
+
+

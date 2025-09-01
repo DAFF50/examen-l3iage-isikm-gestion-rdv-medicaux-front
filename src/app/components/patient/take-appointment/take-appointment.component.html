@@ -1,1 +1,191 @@
-<p>take-appointment works!</p>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>
+      📅 Prendre Rendez-vous
+    </h1>
+    <p>Réservez votre consultation médicale en quelques étapes</p>
+  </div>
+
+  <div class="booking-container">
+    <!-- Informations du médecin -->
+    <div class="doctor-info">
+      <div class="doctor-header">
+        <div class="doctor-avatar">👩‍⚕️</div>
+        <div class="doctor-details">
+          <h2>Dr. Aminata FALL</h2>
+          <div class="doctor-specialty">Cardiologie</div>
+          <div class="doctor-location">
+            📍 Cabinet Médical - Dakar, Sénégal
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>💼 Informations Professionnelles</h3>
+        <ul class="info-list">
+          <li>🎓 15 ans d'expérience</li>
+          <li>🏥 Diplômée Université Cheikh Anta Diop</li>
+          <li>🌟 4.8/5 (156 avis patients)</li>
+          <li>🗣️ Français, Wolof, Anglais</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h3>🕒 Horaires</h3>
+        <ul class="info-list">
+          <li>📅 Lun-Ven: 8h00 - 18h00</li>
+          <li>📅 Samedi: 8h00 - 13h00</li>
+          <li>❌ Dimanche: Fermé</li>
+        </ul>
+      </div>
+
+      <div class="info-section">
+        <h3>🩺 Spécialisations</h3>
+        <ul class="info-list">
+          <li>• Maladies cardiovasculaires</li>
+          <li>• Hypertension artérielle</li>
+          <li>• Électrocardiogramme (ECG)</li>
+          <li>• Échographie cardiaque</li>
+        </ul>
+      </div>
+
+      <div class="price-tag">
+        💰 Consultation: 15,000 FCFA
+      </div>
+    </div>
+
+    <!-- Formulaire de réservation -->
+    <div class="booking-form">
+      <div class="form-steps">
+        <div class="step active">1️⃣ Informations</div>
+        <div class="step">2️⃣ Date & Heure</div>
+        <div class="step">3️⃣ Paiement</div>
+        <div class="step">4️⃣ Confirmation</div>
+      </div>
+
+      <form>
+        <!-- Informations du patient -->
+        <div class="form-section">
+          <h3>👤 Vos Informations</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="prenom">Prénom <span class="required">*</span></label>
+              <input type="text" id="prenom" name="prenom" value="Fatou" required>
+            </div>
+            <div class="form-group">
+              <label for="nom">Nom de famille <span class="required">*</span></label>
+              <input type="text" id="nom" name="nom" value="DIALLO" required>
+            </div>
+            <div class="form-group">
+              <label for="telephone">Téléphone <span class="required">*</span></label>
+              <input type="tel" id="telephone" name="telephone" value="+221 77 123 45 67" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email <span class="required">*</span></label>
+              <input type="email" id="email" name="email" value="fatou.diallo@email.com" required>
+            </div>
+            <div class="form-group">
+              <label for="date_naissance">Date de naissance <span class="required">*</span></label>
+              <input type="date" id="date_naissance" name="date_naissance" value="1990-03-15" required>
+            </div>
+            <div class="form-group">
+              <label for="genre">Genre</label>
+              <select id="genre" name="genre">
+                <option value="">Sélectionner...</option>
+                <option value="femme" selected>Femme</option>
+                <option value="homme">Homme</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label for="motif">Motif de la consultation</label>
+              <textarea id="motif" name="motif" placeholder="Décrivez brièvement la raison de votre consultation...">Douleurs thoraciques occasionnelles depuis 2 semaines, besoin d'un bilan cardiologique.</textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sélection date et heure -->
+        <div class="form-section">
+          <h3>📅 Choisir Date & Heure</h3>
+          <div class="datetime-selector">
+            <div class="form-group">
+              <label for="date_rdv">Date du rendez-vous <span class="required">*</span></label>
+              <input type="date" id="date_rdv" name="date_rdv" min="2025-09-01" required>
+            </div>
+            <div class="form-group">
+              <label>Créneaux disponibles</label>
+              <div class="time-slots">
+                <div class="time-slot unavailable">08:00</div>
+                <div class="time-slot">09:00</div>
+                <div class="time-slot">10:00</div>
+                <div class="time-slot unavailable">11:00</div>
+                <div class="time-slot">14:00</div>
+                <div class="time-slot selected">15:00</div>
+                <div class="time-slot">16:00</div>
+                <div class="time-slot">17:00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode de paiement -->
+        <div class="form-section">
+          <h3>💳 Mode de Paiement</h3>
+          <div class="payment-options">
+            <div class="payment-option selected">
+              <input type="radio" name="payment_mode" value="online" id="pay_online" checked>
+              <div class="payment-details">
+                <h4>💳 Paiement en ligne</h4>
+                <p>Payez directement par carte bancaire. Sécurisé et instantané.</p>
+              </div>
+              <div style="color: #10b981; font-weight: 600;">Recommandé</div>
+            </div>
+            <div class="payment-option">
+              <input type="radio" name="payment_mode" value="cabinet" id="pay_cabinet">
+              <div class="payment-details">
+                <h4>💰 Paiement au cabinet</h4>
+                <p>Payez directement au cabinet lors de votre consultation (espèces ou carte).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Résumé -->
+        <div class="booking-summary">
+          <h3 style="margin-bottom: 1rem; color: #1e293b;">📋 Résumé de votre réservation</h3>
+          <div class="summary-item">
+            <span>Médecin:</span>
+            <span>Dr. Aminata FALL - Cardiologie</span>
+          </div>
+          <div class="summary-item">
+            <span>Date:</span>
+            <span>Lundi 2 Septembre 2025</span>
+          </div>
+          <div class="summary-item">
+            <span>Heure:</span>
+            <span>15:00 - 15:30</span>
+          </div>
+          <div class="summary-item">
+            <span>Lieu:</span>
+            <span>Cabinet Médical - Dakar</span>
+          </div>
+          <div class="summary-item">
+            <span>Mode de paiement:</span>
+            <span>Paiement en ligne</span>
+          </div>
+          <div class="summary-item">
+            <span>Total à payer:</span>
+            <span>15,000 FCFA</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary">↩️ Retour</button>
+          <button type="submit" class="btn btn-primary">💳 Confirmer et Payer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
