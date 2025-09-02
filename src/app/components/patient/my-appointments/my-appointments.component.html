@@ -1,1 +1,248 @@
-<p>my-appointments works!</p>
+<!-- Main Content -->
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>
+      📅 Prendre Rendez-vous
+    </h1>
+    <p>Réservez votre consultation médicale en quelques étapes</p>
+  </div>
+
+
+  <!-- Appointments Container -->
+  <div class="appointments-container">
+    <div class="appointments-list" id="appointmentsList">
+      <!-- Appointment Card 1 -->
+      <div class="appointment-card" data-status="confirmed">
+        <div class="appointment-header">
+          <div class="doctor-info">
+            <div class="doctor-avatar">AF</div>
+            <div class="doctor-details">
+              <h3>Dr. Aminata FALL</h3>
+              <div class="doctor-specialty">Cardiologie</div>
+              <div class="doctor-location">Cabinet Médical - Dakar, Sénégal</div>
+            </div>
+          </div>
+          <span class="appointment-status status-confirmed">Confirmé</span>
+        </div>
+
+        <div class="appointment-details">
+          <div class="detail-item">
+            <div class="detail-icon">📅</div>
+            <div class="detail-text">
+              <h4>Date</h4>
+              <p>15 Sept 2025</p>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">🕐</div>
+            <div class="detail-text">
+              <h4>Heure</h4>
+              <p>14:30</p>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">💰</div>
+            <div class="detail-text">
+              <h4>Paiement</h4>
+              <p>Payé en ligne</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="appointment-actions">
+          <button class="btn btn-secondary" onclick="downloadJustificatif(1)">
+            📄 Télécharger PDF
+          </button>
+          <button class="btn btn-primary" onclick="showDetails(1)">
+            👁️ Voir plus
+          </button>
+          <button class="btn btn-danger" onclick="cancelAppointment(1)">
+            ❌ Annuler
+          </button>
+        </div>
+      </div>
+
+      <!-- Appointment Card 2 -->
+      <div class="appointment-card" data-status="pending">
+        <div class="appointment-header">
+          <div class="doctor-info">
+            <div class="doctor-avatar">MS</div>
+            <div class="doctor-details">
+              <h3>Dr. Mamadou SARR</h3>
+              <div class="doctor-specialty">Médecine Générale</div>
+              <div class="doctor-location">Clinique de la Paix - Dakar</div>
+            </div>
+          </div>
+          <span class="appointment-status status-pending">En attente</span>
+        </div>
+
+        <div class="appointment-details">
+          <div class="detail-item">
+            <div class="detail-icon">📅</div>
+            <div class="detail-text">
+              <h4>Date</h4>
+              <p>20 Sept 2025</p>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">🕐</div>
+            <div class="detail-text">
+              <h4>Heure</h4>
+              <p>09:15</p>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">💰</div>
+            <div class="detail-text">
+              <h4>Paiement</h4>
+              <p>Au cabinet</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="appointment-actions">
+          <button class="btn btn-primary" onclick="payOnline(2)">
+            💳 Payer en ligne
+          </button>
+          <button class="btn btn-primary" onclick="showDetails(2)">
+            👁️ Voir plus
+          </button>
+          <button class="btn btn-danger" onclick="cancelAppointment(2)">
+            ❌ Annuler
+          </button>
+        </div>
+      </div>
+
+      <!-- Appointment Card 3 -->
+      <div class="appointment-card" data-status="confirmed">
+        <div class="appointment-header">
+          <div class="doctor-info">
+            <div class="doctor-avatar">FD</div>
+            <div class="doctor-details">
+              <h3>Dr. Fatou DIOP</h3>
+              <div class="doctor-specialty">Dermatologie</div>
+              <div class="doctor-location">Centre Médical Almadies</div>
+            </div>
+          </div>
+          <span class="appointment-status status-confirmed">Confirmé</span>
+        </div>
+
+        <div class="appointment-details">
+          <div class="detail-item">
+            <div class="detail-icon">📅</div>
+            <div class="detail-text">
+              <h4>Date</h4>
+              <p>25 Sept 2025</p>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">🕐</div>
+            <div class="detail-text">
+              <h4>Heure</h4>
+              <p>16:00</p>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">💰</div>
+            <div class="detail-text">
+              <h4>Paiement</h4>
+              <p>Payé en ligne</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="appointment-actions">
+          <button class="btn btn-secondary" onclick="downloadJustificatif(3)">
+            📄 Télécharger PDF
+          </button>
+          <button class="btn btn-primary" onclick="showDetails(3)">
+            👁️ Voir plus
+          </button>
+          <button class="btn btn-danger" onclick="cancelAppointment(3)">
+            ❌ Annuler
+          </button>
+        </div>
+      </div>
+
+      <!-- Appointment Card 4 - Cancelled -->
+      <div class="appointment-card" data-status="cancelled">
+        <div class="appointment-header">
+          <div class="doctor-info">
+            <div class="doctor-avatar">ON</div>
+            <div class="doctor-details">
+              <h3>Dr. Omar NDIAYE</h3>
+              <div class="doctor-specialty">Orthopédie</div>
+              <div class="doctor-location">Hôpital Principal</div>
+            </div>
+          </div>
+          <span class="appointment-status status-cancelled">Annulé</span>
+        </div>
+
+        <div class="appointment-details">
+          <div class="detail-item">
+            <div class="detail-icon">📅</div>
+            <div class="detail-text">
+              <h4>Date</h4>
+              <p>10 Sept 2025</p>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">🕐</div>
+            <div class="detail-text">
+              <h4>Heure</h4>
+              <p>11:30</p>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">💰</div>
+            <div class="detail-text">
+              <h4>Paiement</h4>
+              <p>Remboursé</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="appointment-actions">
+          <button class="btn btn-primary" onclick="showDetails(4)">
+            👁️ Voir plus
+          </button>
+          <button class="btn btn-secondary" onclick="reschedule(4)">
+            🔄 Reprendre RDV
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div id="detailsModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Détails du Rendez-vous</h3>
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <!-- Content will be populated by JavaScript -->
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Confirmation Modal -->
+<div id="cancelModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Confirmer l'annulation</h3>
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>Êtes-vous sûr de vouloir annuler ce rendez-vous ?</p>
+      <p><strong>Cette action est irréversible.</strong></p>
+      <div class="confirmation-actions">
+        <button class="btn btn-secondary" onclick="closeModal()">Non, garder</button>
+        <button class="btn btn-danger" onclick="confirmCancel()">Oui, annuler</button>
+      </div>
+    </div>
+  </div>
+</div>

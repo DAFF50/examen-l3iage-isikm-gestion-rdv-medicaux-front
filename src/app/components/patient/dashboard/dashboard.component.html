@@ -1,4 +1,16 @@
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>
+      🏠 Tableau de bord
+    </h1>
+    <p>Statistique et Vue d’ensemble des médecins et spécialités</p>
+  </div>
+</div>
+
 <div class="stats-grid">
+
+
   <!-- Carte 1: Total Rendez-vous -->
   <div class="stat-card blue">
     <div class="stat-info">
@@ -43,7 +55,8 @@
       <div class="search-row">
         <div class="search-input-container">
           <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
           <input
             type="text"
@@ -74,7 +87,7 @@
           </div>
           <div class="doctor-actions">
             <span class="status-badge status-available">Disponible</span>
-            <button class="appointment-btn btn-available">Prendre RDV</button>
+            <button routerLink="/patient/take-appointment" class="appointment-btn btn-available">Prendre RDV</button>
           </div>
         </div>
       </div>
