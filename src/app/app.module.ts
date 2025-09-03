@@ -10,6 +10,8 @@ import { MedecinComponent } from "./components/medecin/medecin.component";
 import { RendezvousComponent } from './components/medecin/pages/rendezvous/rendezvous.component';
 import { DashboardComponent } from './components/medecin/pages/dashboard/dashboard.component';
 import { PaiementsComponent } from './components/medecin/pages/paiements/paiements.component';
+import { AdminComponent } from './components/admin/admin.component';
+import { AdminDashboardComponent } from './components/admin/pages/dashboard/dashboard.component';
 
 
 
@@ -23,7 +25,9 @@ import { PaiementsComponent } from './components/medecin/pages/paiements/paiemen
     MedecinComponent,
     RendezvousComponent,
     DashboardComponent,
-    PaiementsComponent
+    PaiementsComponent,
+    AdminComponent,
+    AdminDashboardComponent
     
   ],
   imports: [

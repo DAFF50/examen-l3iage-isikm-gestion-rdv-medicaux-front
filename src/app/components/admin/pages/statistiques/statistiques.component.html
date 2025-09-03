@@ -1,0 +1,118 @@
+<!-- dashboard-medecin.component.html -->
+<div class="dashboard-container">
+  <!-- En-tête -->
+  <div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <p>Vue d'ensemble de votre activité</p>
+  </div>
+
+  <!-- Cartes statistiques -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class='bx bx-calendar-check'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats.rdvAujourdhui }}</h3>
+        <p>RDV Aujourd'hui</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class='bx bx-time-five'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats.rdvEnAttente }}</h3>
+        <p>En Attente</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class='bx bx-check-circle'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats.rdvConfirmes }}</h3>
+        <p>Confirmés</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class='bx bx-wallet'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ stats.revenuMois | currency:'XOF':'symbol':'1.0-0' }}</h3>
+        <p>Revenus ce mois</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <!-- Section Rendez-vous récents -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2>Rendez-vous Récents</h2>
+        <a routerLink="/medecin/rendezvous" class="btn btn-outline">Voir tout</a>
+      </div>
+      
+      <div class="rdv-list">
+        <div class="rdv-item" *ngFor="let rdv of rdvRecents">
+          <div class="rdv-info">
+            <div class="patient-info">
+              <h4>{{ rdv.patientPrenom }} {{ rdv.patientNom }}</h4>
+              <p>{{ rdv.motif }}</p>
+            </div>
+            <div class="rdv-details">
+              <span class="date">{{ rdv.date | date:'dd/MM/yyyy' }}</span>
+              <span class="heure">{{ rdv.heure }}</span>
+            </div>
+          </div>
+          
+          <div class="rdv-status">
+            <span class="statut-badge" [class]="getStatutClass(rdv.statut)">
+              {{ rdv.statut | titlecase }}
+            </span>
+            <span class="paiement-badge" [class]="getStatutClass(rdv.statutPaiement)">
+              {{ rdv.statutPaiement === 'paye' ? 'Payé' : rdv.statutPaiement === 'cabinet' ? 'Cabinet' : 'En attente' }}
+            </span>
+          </div>
+
+          <div class="rdv-actions" *ngIf="rdv.statut === 'en_attente'">
+            <button class="btn btn-success btn-sm" (click)="confirmerRendezVous(rdv)">
+              <i class='bx bx-check'></i>
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="refuserRendezVous(rdv)">
+              <i class='bx bx-x'></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Plages horaires -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2>Plages Horaires de la Semaine</h2>
+        <button class="btn btn-primary">Gérer les horaires</button>
+      </div>
+      
+      <div class="plages-list">
+        <div class="plage-item" *ngFor="let plage of plagesHoraires">
+          <div class="plage-date">
+            <strong>{{ plage.date | date:'EEEE dd/MM' }}</strong>
+          </div>
+          <div class="plage-horaire">
+            {{ plage.heureDebut }} - {{ plage.heureFin }}
+          </div>
+          <div class="plage-status">
+            <span class="statut-badge" [class]="plage.disponible ? 'statut-disponible' : 'statut-indisponible'">
+              {{ plage.disponible ? 'Disponible' : 'Complet' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

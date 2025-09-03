@@ -1,0 +1,156 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>Dashboard Administrateur</h1>
+      <p>Vue d'ensemble de la plateforme médicale</p>
+    </div>
+    <button class="refresh-btn" (click)="refreshDashboard()">
+      <i class='bx bx-refresh'></i>
+      Actualiser
+    </button>
+  </div>
+
+  <!-- Cartes statistiques principales -->
+  <div class="stats-grid">
+    <div class="stat-card users">
+      <div class="stat-icon">
+        <i class='bx bx-group'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ dashboardData.totalUsers | number }}</h3>
+        <p>Utilisateurs Total</p>
+        <div class="stat-breakdown">
+          <span class="breakdown-item">
+            <i class='bx bx-user-circle'></i>
+            {{ dashboardData.totalDoctors }} médecins
+          </span>
+          <span class="breakdown-item">
+            <i class='bx bx-user'></i>
+            {{ dashboardData.totalPatients }} patients
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card appointments">
+      <div class="stat-icon">
+        <i class='bx bx-calendar'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ dashboardData.totalAppointments | number }}</h3>
+        <p>Rendez-vous ce mois</p>
+        <div class="stat-trend positive">
+          <i class='bx bx-trending-up'></i>
+          +{{ dashboardData.monthlyGrowth }}% vs mois dernier
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card revenue">
+      <div class="stat-icon">
+        <i class='bx bx-euro'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ dashboardData.totalRevenue | number:'1.0-0' }}€</h3>
+        <p>Revenus Total</p>
+        <div class="stat-breakdown">
+          <span class="breakdown-item success">
+            <i class='bx bx-check-circle'></i>
+            {{ dashboardData.paidAppointments }} confirmés
+          </span>
+          <span class="breakdown-item warning">
+            <i class='bx bx-time-five'></i>
+            {{ dashboardData.pendingPayments }} en attente
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card pdfs">
+      <div class="stat-icon">
+        <i class='bx bx-file-blank'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ dashboardData.generatedPdfs | number }}</h3>
+        <p>Justificatifs PDF</p>
+        <div class="stat-detail">
+          Générés automatiquement
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats rapides -->
+  <div class="quick-stats">
+    <div class="quick-stat-item" *ngFor="let stat of quickStats">
+      <div class="quick-stat-value">{{ stat.value | number:'1.1-1' }}{{ stat.suffix }}</div>
+      <div class="quick-stat-label">{{ stat.label }}</div>
+    </div>
+  </div>
+
+  <!-- Section principale avec graphiques -->
+  <div class="main-content">
+    <div class="charts-section">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Évolution des Revenus</h3>
+          <div class="chart-period">
+            <span class="period-item active">6M</span>
+            <span class="period-item">1A</span>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas #revenueChart></canvas>
+        </div>
+      </div>
+      
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>RDV par Spécialité</h3>
+        </div>
+        <div class="chart-container">
+          <canvas #appointmentsChart></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statuts des paiements -->
+    <div class="payment-status-section">
+      <h3>Statuts des Paiements</h3>
+      <div class="payment-stats">
+        <div class="payment-stat" *ngFor="let stat of paymentStats">
+          <div class="payment-stat-info">
+            <span class="stat-label">{{ stat.label }}</span>
+            <span class="stat-value">{{ stat.value }}</span>
+          </div>
+          <div class="stat-bar">
+            <div class="stat-fill" 
+                 [style.width.%]="stat.percentage" 
+                 [style.background-color]="stat.color">
+            </div>
+          </div>
+          <span class="stat-percentage">{{ stat.percentage }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activités récentes -->
+  <div class="recent-activities-section">
+    <h3>Activités Récentes</h3>
+    <div class="activities-list">
+      <div class="activity-item" *ngFor="let activity of recentActivities">
+        <div class="activity-icon" [style.background-color]="getActivityColor(activity.type)">
+          <i [class]="'bx ' + getActivityIcon(activity.type)"></i>
+        </div>
+        <div class="activity-content">
+          <p class="activity-description">{{ activity.description }}</p>
+          <div class="activity-meta">
+            <span class="activity-user">{{ activity.user }}</span>
+            <span class="activity-time">{{ activity.timestamp | date:'short' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

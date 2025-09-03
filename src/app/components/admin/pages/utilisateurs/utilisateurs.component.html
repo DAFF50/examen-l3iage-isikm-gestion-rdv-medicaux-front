@@ -1,0 +1,232 @@
+<!-- paiements-medecin.component.html -->
+<div class="paiements-container">
+  <!-- En-tête -->
+  <div class="page-header">
+    <h1>Gestion des Paiements</h1>
+    <div class="header-actions">
+      <div class="view-toggle">
+        <button 
+          class="toggle-btn"
+          [class.active]="viewMode === 'liste'"
+          (click)="setViewMode('liste')">
+          <i class='bx bx-list-ul'></i>
+          Liste
+        </button>
+        <button 
+          class="toggle-btn"
+          [class.active]="viewMode === 'stats'"
+          (click)="setViewMode('stats')">
+          <i class='bx bx-bar-chart-alt-2'></i>
+          Statistiques
+        </button>
+      </div>
+      <button class="btn btn-primary" (click)="exporterDonnees()">
+        <i class='bx bx-download'></i>
+        Exporter
+      </button>
+    </div>
+  </div>
+
+  <!-- Vue Statistiques -->
+  <div class="stats-view" *ngIf="viewMode === 'stats'">
+    <!-- Cartes statistiques principales -->
+    <div class="stats-grid">
+      <div class="stat-card highlight">
+        <div class="stat-icon">
+          <i class='bx bx-wallet'></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{ statistiques.totalMois | currency:'XOF':'symbol':'1.0-0' }}</h3>
+          <p>Revenus Total</p>
+          <span class="stat-change positive">+12% ce mois</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon online">
+          <i class='bx bx-credit-card'></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{ statistiques.totalEnLigne | currency:'XOF':'symbol':'1.0-0' }}</h3>
+          <p>Paiements En Ligne</p>
+          <span class="stat-percentage">{{ statistiques.tauxPaiementEnLigne | number:'1.0-0' }}%</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon cabinet">
+          <i class='bx bx-store'></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{ statistiques.totalCabinet | currency:'XOF':'symbol':'1.0-0' }}</h3>
+          <p>Paiements Cabinet</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class='bx bx-receipt'></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{ statistiques.nombrePaiements }}</h3>
+          <p>Transactions</p>
+          <span class="stat-detail">{{ statistiques.nombreRemboursements }} remboursements</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphique simple des revenus -->
+    <div class="chart-section">
+      <div class="section-card">
+        <div class="section-header">
+          <h2>Évolution des Revenus</h2>
+          <select [(ngModel)]="filtreMois" class="month-selector" (ngModelChange)="calculerStatistiques()">
+            <option value="2025-09">Septembre 2025</option>
+            <option value="2025-08">Août 2025</option>
+            <option value="2025-07">Juillet 2025</option>
+            <option value="2025-06">Juin 2025</option>
+          </select>
+        </div>
+        
+        <div class="simple-chart">
+          <div class="chart-bars">
+            <div class="bar" *ngFor="let donnee of donneesGraphique.slice(0, 7)">
+              <div class="bar-fill" [style.height.%]="(donnee.montant / 30000) * 100">
+                <span class="bar-value">{{ donnee.montant | currency:'XOF':'symbol':'1.0-0' }}</span>
+              </div>
+              <span class="bar-label">{{ donnee.date }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue Liste -->
+  <div class="list-view" *ngIf="viewMode === 'liste'">
+    <!-- Filtres -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <label for="statut">Statut:</label>
+        <select id="statut" [(ngModel)]="filtreStatut" class="filter-select">
+          <option value="tous">Tous</option>
+          <option value="en_attente">En attente</option>
+          <option value="paye">Payés</option>
+          <option value="rembourse">Remboursés</option>
+          <option value="annule">Annulés</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="type">Type:</label>
+        <select id="type" [(ngModel)]="filtreType" class="filter-select">
+          <option value="tous">Tous</option>
+          <option value="en_ligne">En ligne</option>
+          <option value="cabinet">Cabinet</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="mois">Mois:</label>
+        <input 
+          type="month" 
+          id="mois" 
+          [(ngModel)]="filtreMois"
+          class="filter-input">
+      </div>
+      
+      <button class="btn btn-outline" (click)="actualiserDonnees()">
+        <i class='bx bx-refresh'></i>
+        Actualiser
+      </button>
+    </div>
+
+    <!-- Table des paiements -->
+    <div class="paiements-table">
+      <div class="table-header">
+        <div class="header-cell">Patient</div>
+        <div class="header-cell">RDV</div>
+        <div class="header-cell">Montant</div>
+        <div class="header-cell">Type</div>
+        <div class="header-cell">Statut</div>
+        <div class="header-cell">Date</div>
+        <div class="header-cell">Actions</div>
+      </div>
+
+      <div class="table-body">
+        <div class="table-row" *ngFor="let paiement of paiementsFiltres">
+          <div class="table-cell">
+            <div class="patient-info">
+              <strong>{{ paiement.patientPrenom }} {{ paiement.patientNom }}</strong>
+              <small>{{ paiement.referenceRdv }}</small>
+            </div>
+          </div>
+
+          <div class="table-cell">
+            <div class="rdv-info">
+              <span class="rdv-date">{{ paiement.dateRendezVous | date:'dd/MM/yyyy' }}</span>
+              <span class="rdv-heure">{{ paiement.heureRendezVous }}</span>
+            </div>
+          </div>
+
+          <div class="table-cell">
+            <div class="montant-info">
+              <strong class="montant">{{ paiement.montant | currency:'XOF':'symbol':'1.0-0' }}</strong>
+              <small class="methode">{{ getMethodePaiementLabel(paiement.methodePaiement) }}</small>
+            </div>
+          </div>
+
+          <div class="table-cell">
+            <span class="type-badge" [class]="getTypeClass(paiement.typePaiement)">
+              {{ paiement.typePaiement === 'en_ligne' ? 'En ligne' : 'Cabinet' }}
+            </span>
+          </div>
+
+          <div class="table-cell">
+            <span class="statut-badge" [class]="getStatutClass(paiement.statut)">
+              {{ getStatutLabel(paiement.statut) }}
+            </span>
+          </div>
+
+          <div class="table-cell">
+            <div class="date-info">
+              {{ paiement.datePaiement ? (paiement.datePaiement | date:'dd/MM/yyyy') : 'En attente' }}
+            </div>
+          </div>
+
+          <div class="table-cell">
+            <div class="action-buttons">
+              <button 
+                class="btn btn-outline btn-sm"
+                (click)="telechargerRecu(paiement)"
+                [disabled]="paiement.statut === 'en_attente'">
+                <i class='bx bx-download'></i>
+              </button>
+
+              <button 
+                class="btn btn-warning btn-sm"
+                *ngIf="paiement.statut === 'paye'"
+                (click)="rembourserPaiement(paiement)">
+                <i class='bx bx-undo'></i>
+              </button>
+
+              <button 
+                class="btn btn-danger btn-sm"
+                *ngIf="paiement.statut === 'en_attente'"
+                (click)="annulerPaiement(paiement)">
+                <i class='bx bx-x'></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message si aucun paiement -->
+      <div class="empty-state" *ngIf="paiementsFiltres.length === 0">
+        <i class='bx bx-wallet'></i>
+        <h3>Aucun paiement trouvé</h3>
+        <p>Aucun paiement ne correspond aux critères sélectionnés.</p>
+      </div>
+    </div>
+  </div>
+</div>

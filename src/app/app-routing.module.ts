@@ -3,10 +3,15 @@ import {RouterModule, Routes} from '@angular/router';
 
 import {LoginComponent} from "./components/login/login.component";
 import {SignupComponent} from './components/signup/signup.component';
+
 import {MedecinComponent} from './components/medecin/medecin.component';
 import {DashboardComponent} from './components/medecin/pages/dashboard/dashboard.component';
 import {RendezvousComponent} from './components/medecin/pages/rendezvous/rendezvous.component';
 import {PaiementsComponent} from './components/medecin/pages/paiements/paiements.component';
+
+import { AdminComponent } from './components/admin/admin.component';
+import { AdminDashboardComponent } from './components/admin/pages/dashboard/dashboard.component';
+
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -19,6 +24,15 @@ const routes: Routes = [
       { path: 'rendezvous', component: RendezvousComponent },
       { path: 'paiements', component: PaiementsComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    ]
+  },
+
+  {
+    path: 'admin',
+    component: AdminComponent,
+    children: [
+      { path: 'dashboard', component: AdminDashboardComponent }
+      
     ]
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
