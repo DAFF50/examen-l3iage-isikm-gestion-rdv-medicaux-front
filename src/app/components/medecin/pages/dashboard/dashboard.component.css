@@ -1,0 +1,338 @@
+/* dashboard-medecin.component.css */
+.dashboard-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dashboard-header {
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  color: var(--text-color);
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.dashboard-header p {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: 1.1rem;
+}
+
+/* Grille des statistiques */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: var(--sidebar-color);
+  padding: 25px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color, rgba(0,0,0,0.1));
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+}
+
+.stat-icon i {
+  font-size: 24px;
+  color: white;
+}
+
+.stat-content h3 {
+  font-size: 2rem;
+  color: var(--text-color);
+  margin: 0;
+  font-weight: 700;
+}
+
+.stat-content p {
+  color: var(--text-color);
+  opacity: 0.7;
+  margin: 5px 0 0 0;
+  font-size: 0.95rem;
+}
+
+/* Contenu du dashboard */
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.section-card {
+  background: var(--sidebar-color);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color, rgba(0,0,0,0.1));
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color, rgba(0,0,0,0.1));
+}
+
+.section-header h2 {
+  color: var(--text-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Boutons */
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--primary-color, #667eea);
+  color: var(--primary-color, #667eea);
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Liste des rendez-vous */
+.rdv-list > * + * {
+  margin-top: 15px;
+}
+
+
+.rdv-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: var(--body-color, #f8fafc);
+  border-radius: 10px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.rdv-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rdv-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.patient-info h4 {
+  color: var(--text-color);
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.patient-info p {
+  color: var(--text-color);
+  opacity: 0.7;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.rdv-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.date, .heure {
+  font-size: 0.85rem;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.rdv-status {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.rdv-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Badges de statut */
+.statut-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statut-attente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.statut-confirme {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.statut-refuse {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.statut-paye {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.statut-cabinet {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.statut-disponible {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.statut-indisponible {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.paiement-badge {
+  padding: 3px 10px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Plages horaires */
+.plages-list  > * + *{
+  margin-top: 12px;
+}
+
+.plage-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: var(--body-color, #f8fafc);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.plage-date {
+  color: var(--text-color);
+}
+
+.plage-horaire {
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+/* Mode sombre */
+:global(.dark) .stat-card,
+:global(.dark) .section-card {
+  background: var(--sidebar-color);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark) .rdv-item,
+:global(.dark) .plage-item {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .rdv-item {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .rdv-info {
+    justify-content: center;
+  }
+}

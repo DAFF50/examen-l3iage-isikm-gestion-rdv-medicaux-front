@@ -1,0 +1,290 @@
+<!-- rendezvous-medecin.component.html -->
+<div class="rdv-container">
+  <!-- En-tête avec navigation par onglets -->
+  <div class="page-header">
+    <h1>Gestion des Rendez-vous</h1>
+    <div class="tabs-nav">
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'rdv'"
+        (click)="setActiveTab('rdv')">
+        <i class='bx bx-calendar'></i>
+        Mes Rendez-vous
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'plages'"
+        (click)="setActiveTab('plages')">
+        <i class='bx bx-time'></i>
+        Plages Horaires
+      </button>
+    </div>
+  </div>
+
+  <!-- Section Rendez-vous -->
+  <div class="tab-content" *ngIf="activeTab === 'rdv'">
+    <!-- Filtres -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <label for="statut">Statut:</label>
+        <select id="statut" [(ngModel)]="filtreStatut" class="filter-select">
+          <option value="tous">Tous les statuts</option>
+          <option value="en_attente">En attente</option>
+          <option value="confirme">Confirmés</option>
+          <option value="refuse">Refusés</option>
+          <option value="termine">Terminés</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="dateDebut">Du:</label>
+        <input 
+          type="date" 
+          id="dateDebut" 
+          [(ngModel)]="filtreDateDebut"
+          class="filter-input">
+      </div>
+      
+      <div class="filter-group">
+        <label for="dateFin">Au:</label>
+        <input 
+          type="date" 
+          id="dateFin" 
+          [(ngModel)]="filtreDateFin"
+          class="filter-input">
+      </div>
+      
+      <button class="btn btn-outline" (click)="chargerRendezVous()">
+        <i class='bx bx-refresh'></i>
+        Actualiser
+      </button>
+    </div>
+
+    <!-- Liste des rendez-vous -->
+    <div class="rdv-grid">
+      <div class="rdv-card" *ngFor="let rdv of rendezVousFiltres">
+        <!-- Header de la carte -->
+        <div class="rdv-header">
+          <div class="patient-info">
+            <h3>{{ rdv.patientPrenom }} {{ rdv.patientNom }}</h3>
+            <span class="reference">{{ rdv.referenceRdv }}</span>
+          </div>
+          <div class="rdv-status-badges">
+            <span class="statut-badge" [class]="getStatutClass(rdv.statut)">
+              {{ getStatutLabel(rdv.statut) }}
+            </span>
+            <span class="paiement-badge" [class]="getStatutClass(rdv.statutPaiement)">
+              {{ rdv.statutPaiement === 'paye' ? 'Payé' : rdv.statutPaiement === 'cabinet' ? 'Cabinet' : 'En attente' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Contenu de la carte -->
+        <div class="rdv-content">
+          <div class="rdv-datetime">
+            <div class="datetime-item">
+              <i class='bx bx-calendar'></i>
+              <span>{{ rdv.date | date:'EEEE dd MMMM yyyy':'':'fr' }}</span>
+            </div>
+            <div class="datetime-item">
+              <i class='bx bx-time'></i>
+              <span>{{ rdv.heure }}</span>
+            </div>
+          </div>
+
+          <div class="rdv-details">
+            <div class="detail-item">
+              <strong>Motif:</strong>
+              <span>{{ rdv.motif }}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Contact:</strong>
+              <span>{{ rdv.patientTelephone }}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Email:</strong>
+              <span>{{ rdv.patientEmail }}</span>
+            </div>
+            <div class="detail-item">
+              <strong>Montant:</strong>
+              <span class="montant">{{ rdv.montant | currency:'XOF':'symbol':'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="rdv-actions">
+          <!-- Actions selon le statut -->
+          <div class="action-group" *ngIf="rdv.statut === 'en_attente'">
+            <button class="btn btn-success btn-sm" (click)="confirmerRendezVous(rdv)">
+              <i class='bx bx-check'></i>
+              Confirmer
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="refuserRendezVous(rdv)">
+              <i class='bx bx-x'></i>
+              Refuser
+            </button>
+          </div>
+
+          <div class="action-group" *ngIf="rdv.statut === 'confirme'">
+            <button class="btn btn-primary btn-sm" (click)="marquerTermine(rdv)">
+              <i class='bx bx-check-circle'></i>
+              Marquer terminé
+            </button>
+          </div>
+
+          <!-- Actions communes -->
+          <button 
+            class="btn btn-outline btn-sm" 
+            (click)="telechargerJustificatif(rdv)"
+            [disabled]="rdv.statut === 'refuse'">
+            <i class='bx bx-download'></i>
+            Justificatif PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Message si aucun rendez-vous -->
+      <div class="empty-state" *ngIf="rendezVousFiltres.length === 0">
+        <i class='bx bx-calendar-x'></i>
+        <h3>Aucun rendez-vous trouvé</h3>
+        <p>Aucun rendez-vous ne correspond aux critères sélectionnés.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Plages Horaires -->
+  <div class="tab-content" *ngIf="activeTab === 'plages'">
+    <div class="plages-header">
+      <h2>Mes Plages Horaires</h2>
+      <button class="btn btn-primary" (click)="ajouterPlage()">
+        <i class='bx bx-plus'></i>
+        Ajouter une plage
+      </button>
+    </div>
+
+    <div class="plages-grid">
+      <div class="plage-card" *ngFor="let plage of plagesHoraires">
+        <div class="plage-header">
+          <h3>{{ plage.jour }}</h3>
+          <div class="plage-status">
+            <span class="statut-badge" [class]="plage.actif ? 'statut-disponible' : 'statut-indisponible'">
+              {{ plage.actif ? 'Actif' : 'Inactif' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="plage-content">
+          <div class="plage-info">
+            <div class="info-item">
+              <i class='bx bx-time'></i>
+              <span>{{ plage.heureDebut }} - {{ plage.heureFin }}</span>
+            </div>
+            <div class="info-item">
+              <i class='bx bx-timer'></i>
+              <span>Slots de {{ plage.dureeSlot }}min</span>
+            </div>
+            <div class="info-item" *ngIf="plage.pauseDebut && plage.pauseFin">
+              <i class='bx bx-pause'></i>
+              <span>Pause: {{ plage.pauseDebut }} - {{ plage.pauseFin }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="plage-actions">
+          <button 
+            class="btn btn-sm"
+            [class]="plage.actif ? 'btn-warning' : 'btn-success'"
+            (click)="togglePlage(plage)">
+            <i class="bx" [class]="plage.actif ? 'bx-pause' : 'bx-play'"></i>
+            {{ plage.actif ? 'Désactiver' : 'Activer' }}
+          </button>
+          <button class="btn btn-danger btn-sm" (click)="supprimerPlage(plage.id)">
+            <i class='bx bx-trash'></i>
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal pour ajouter une plage horaire -->
+  <div class="modal-overlay" *ngIf="showModalPlage" (click)="fermerModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Ajouter une plage horaire</h3>
+        <button class="modal-close" (click)="fermerModal()">
+          <i class='bx bx-x'></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="jour">Jour de la semaine</label>
+          <select id="jour" [(ngModel)]="nouvellePlage.jour" class="form-input">
+            <option value="Lundi">Lundi</option>
+            <option value="Mardi">Mardi</option>
+            <option value="Mercredi">Mercredi</option>
+            <option value="Jeudi">Jeudi</option>
+            <option value="Vendredi">Vendredi</option>
+            <option value="Samedi">Samedi</option>
+            <option value="Dimanche">Dimanche</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="heureDebut">Heure de début</label>
+            <input 
+              type="time" 
+              id="heureDebut" 
+              [(ngModel)]="nouvellePlage.heureDebut"
+              class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="heureFin">Heure de fin</label>
+            <input 
+              type="time" 
+              id="heureFin" 
+              [(ngModel)]="nouvellePlage.heureFin"
+              class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="dureeSlot">Durée des créneaux (minutes)</label>
+          <select id="dureeSlot" [(ngModel)]="nouvellePlage.dureeSlot" class="form-input">
+            <option [ngValue]="15">15 minutes</option>
+            <option [ngValue]="30">30 minutes</option>
+            <option [ngValue]="45">45 minutes</option>
+            <option [ngValue]="60">60 minutes</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pauseDebut">Pause début (optionnel)</label>
+            <input 
+              type="time" 
+              id="pauseDebut" 
+              [(ngModel)]="nouvellePlage.pauseDebut"
+              class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="pauseFin">Pause fin (optionnel)</label>
+            <input 
+              type="time" 
+              id="pauseFin" 
+              [(ngModel)]="nouvellePlage.pauseFin"
+              class="form-input">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="fermerModal()">Annuler</button>
+        <button class="btn btn-primary" (click)="sauvegarderPlage()">Sauvegarder</button>
+      </div>
+    </div>
+  </div>
+</div>
