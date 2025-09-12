@@ -4,6 +4,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from "./components/login/login.component";
 import {SignupComponent} from './components/signup/signup.component';
 
+
 import {SidebarComponent} from "./components/patient/sidebar/sidebar.component";
 import {DashboardComponent} from "./components/patient/dashboard/dashboard.component";
 import {ChatAiComponent} from "./components/patient/chat-ai/chat-ai.component";
@@ -12,10 +13,21 @@ import {MyAppointmentsComponent} from "./components/patient/my-appointments/my-a
 import {TakeAppointmentComponent} from "./components/patient/take-appointment/take-appointment.component";
 
 
+
 import {MedecinComponent} from './components/medecin/medecin.component';
 import {MedecinDashboardComponent} from './components/medecin/pages/dashboard/dashboard.component';
 import {RendezvousComponent} from './components/medecin/pages/rendezvous/rendezvous.component';
 import {PaiementsComponent} from './components/medecin/pages/paiements/paiements.component';
+
+import { AdminComponent } from './components/admin/admin.component';
+import { AdminDashboardComponent } from './components/admin/pages/dashboard/dashboard.component';
+import { UtilisateursComponent } from './components/admin/pages/utilisateurs/utilisateurs.component';
+import { SpecialitesComponent } from './components/admin/pages/specialites/specialites.component';
+//import { AdminPaiementsComponent } from './components/admin/pages/paiements/paiements.component';
+import { JustificatifsComponent } from './components/admin/pages/justificatifs/justificatifs.component';
+
+
+
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -44,6 +56,20 @@ const routes: Routes = [
       { path: 'rendezvous', component: RendezvousComponent },
       { path: 'paiements', component: PaiementsComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    ]
+  },
+
+  {
+    path: 'admin',
+    component: AdminComponent,
+    children: [
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'utilisateurs', component: UtilisateursComponent },
+      { path: 'specialites', component: SpecialitesComponent },
+       { path: 'justificatifs', component: JustificatifsComponent },
+      
+      //{ path: 'paiements', component: AdminPaiementsComponent },
+      
     ]
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },

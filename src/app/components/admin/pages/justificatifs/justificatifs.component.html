@@ -1,0 +1,442 @@
+<div class="justificatifs-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Gestion des Justificatifs PDF</h1>
+      <p>Gérer et suivre tous les justificatifs de rendez-vous</p>
+    </div>
+    <div class="header-actions">
+      <button class="refresh-btn" (click)="refreshData()" [disabled]="isLoading">
+        <i class='bx bx-refresh' [class.spinning]="isLoading"></i>
+        Actualiser
+      </button>
+      <button class="bulk-btn" (click)="bulkDownload()">
+        <i class='bx bx-download'></i>
+        Téléchargement en lot
+      </button>
+      <button class="export-btn" (click)="exportJustificatifs()">
+        <i class='bx bx-data'></i>
+        Exporter CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Spinner de chargement -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="spinner">
+      <div class="bounce1"></div>
+      <div class="bounce2"></div>
+      <div class="bounce3"></div>
+    </div>
+  </div>
+
+  <!-- Statistiques rapides -->
+  <div class="stats-overview" *ngIf="!isLoading">
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <i class='bx bx-file-blank'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalStats().total }}</h3>
+        <p>Justificatifs Total</p>
+      </div>
+    </div>
+    <div class="stat-card valid">
+      <div class="stat-icon">
+        <i class='bx bx-check-shield'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalStats().valid }}</h3>
+        <p>Valides</p>
+      </div>
+    </div>
+    <div class="stat-card invalid">
+      <div class="stat-icon">
+        <i class='bx bx-x-circle'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalStats().invalid }}</h3>
+        <p>Invalides</p>
+      </div>
+    </div>
+    <div class="stat-card expired">
+      <div class="stat-icon">
+        <i class='bx bx-time-five'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalStats().expired }}</h3>
+        <p>Expirés</p>
+      </div>
+    </div>
+    <div class="stat-card downloads">
+      <div class="stat-icon">
+        <i class='bx bx-download'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalStats().totalDownloads }}</h3>
+        <p>Téléchargements</p>
+      </div>
+    </div>
+    <div class="stat-card size">
+      <div class="stat-icon">
+        <i class='bx bx-data'></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ formatFileSize(getTotalStats().totalSize) }}</h3>
+        <p>Taille totale</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section des filtres -->
+  <div class="filters-section" *ngIf="!isLoading">
+    <div class="search-container">
+      <div class="search-box">
+        <i class='bx bx-search'></i>
+        <input 
+          type="text" 
+          placeholder="Rechercher par référence, patient, médecin..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+        >
+      </div>
+    </div>
+    
+    <div class="filters-row">
+      <select [(ngModel)]="selectedStatus" (change)="onFilterChange()" class="filter-select">
+        <option *ngFor="let status of statusOptions" [value]="status.value">{{ status.label }}</option>
+      </select>
+      
+      <select [(ngModel)]="selectedSpecialty" (change)="onFilterChange()" class="filter-select">
+        <option *ngFor="let specialty of specialtyOptions" [value]="specialty.value">{{ specialty.label }}</option>
+      </select>
+
+      <select [(ngModel)]="selectedDateRange" (change)="onFilterChange()" class="filter-select">
+         <option *ngFor="let date of dateRangeOptions" [value]="date.value">{{ date.label }}</option>
+      </select>
+
+      <div class="results-info">
+        {{ filteredJustificatifs.length }} justificatif(s) trouvé(s)
+      </div>
+    </div>
+  </div>
+
+  <!-- Grille des justificatifs -->
+  <div class="justificatifs-grid" *ngIf="!isLoading">
+    <div class="justificatif-card" 
+         *ngFor="let justificatif of getPaginatedJustificatifs(); trackBy: trackByJustificatifId"
+         [class.invalid]="!justificatif.isValid"
+         [class.expired]="isExpired(justificatif)">
+      
+      <div class="card-header">
+        <div class="justificatif-icon" [style.background]="getStatusColor(justificatif)">
+          <i class='bx bx-file-blank'></i>
+        </div>
+        <div class="justificatif-status">
+          <span class="status-badge" [style.background-color]="getStatusColor(justificatif)">
+            {{ getStatusText(justificatif) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="reference-number">
+          <i class='bx bx-qr'></i>
+          {{ justificatif.referenceNumber }}
+        </div>
+        
+        <div class="patient-info">
+          <div class="info-row">
+            <i class='bx bx-user'></i>
+            <span>{{ justificatif.patient.firstName }} {{ justificatif.patient.lastName }}</span>
+          </div>
+          <div class="info-row">
+            <i class='bx bx-envelope'></i>
+            <span>{{ justificatif.patient.email }}</span>
+          </div>
+        </div>
+
+        <div class="doctor-info">
+          <div class="info-row">
+            <i class='bx bx-user-circle'></i>
+            <span>{{ justificatif.doctor.firstName }} {{ justificatif.doctor.lastName }}</span>
+          </div>
+          <div class="info-row">
+            <i class='bx bx-category'></i>
+            <span>{{ justificatif.doctor.specialty }}</span>
+          </div>
+        </div>
+
+        <div class="appointment-info">
+          <div class="info-row">
+            <i class='bx bx-calendar'></i>
+            <span>{{ formatDateTime(justificatif.appointment.appointmentDate) }}</span>
+          </div>
+          <div class="info-row">
+            <i class='bx bx-medical'></i>
+            <span>{{ getAppointmentTypeText(justificatif.appointment.type) }}</span>
+          </div>
+        </div>
+
+        <div class="file-stats">
+          <div class="stat-item">
+            <i class='bx bx-data'></i>
+            <span>{{ formatFileSize(justificatif.fileSize) }}</span>
+          </div>
+          <div class="stat-item">
+            <i class='bx bx-download'></i>
+            <span>{{ justificatif.downloadCount }} téléch.</span>
+          </div>
+          <div class="stat-item">
+            <i class='bx bx-time'></i>
+            <span>{{ formatDate(justificatif.generatedAt) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="action-buttons">
+          <button class="action-btn view" (click)="viewJustificatif(justificatif)" title="Voir les détails">
+            <i class='bx bx-show'></i>
+          </button>
+          <button class="action-btn download" (click)="downloadJustificatif(justificatif)" title="Télécharger">
+            <i class='bx bx-download'></i>
+          </button>
+          <button class="action-btn preview" (click)="previewJustificatif(justificatif)" title="Prévisualiser">
+            <i class='bx bx-window'></i>
+          </button>
+          <button class="action-btn email" (click)="sendJustificatifByEmail(justificatif)" title="Envoyer par email">
+            <i class='bx bx-envelope'></i>
+          </button>
+          <button class="action-btn regenerate" (click)="regenerateJustificatif(justificatif)" title="Régénérer">
+            <i class='bx bx-refresh'></i>
+          </button>
+          <button class="action-btn toggle" 
+                  (click)="toggleJustificatifStatus(justificatif)" 
+                  [title]="justificatif.isValid ? 'Invalider' : 'Valider'">
+            <i class='bx' [class.bx-toggle-left]="!justificatif.isValid" [class.bx-toggle-right]="justificatif.isValid"></i>
+          </button>
+          <button class="action-btn delete" (click)="confirmDelete(justificatif)" title="Supprimer">
+            <i class='bx bx-trash'></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message si aucun justificatif -->
+  <div *ngIf="getPaginatedJustificatifs().length === 0 && !isLoading" class="no-data">
+    <i class='bx bx-file-blank'></i>
+    <h3>Aucun justificatif trouvé</h3>
+    <p>Aucun justificatif ne correspond aux critères de recherche</p>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages > 1 && !isLoading">
+    <button class="page-btn" 
+            [disabled]="currentPage === 1" 
+            (click)="onPageChange(currentPage - 1)">
+      <i class='bx bx-chevron-left'></i>
+    </button>
+    
+    <span class="page-info">
+      Page {{ currentPage }} sur {{ totalPages }}
+    </span>
+    
+    <button class="page-btn" 
+            [disabled]="currentPage === totalPages" 
+            (click)="onPageChange(currentPage + 1)">
+      <i class='bx bx-chevron-right'></i>
+    </button>
+  </div>
+</div>
+
+<!-- Modal détails justificatif -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal justificatif-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Détails du Justificatif</h2>
+      <button class="close-btn" (click)="closeModal()">
+        <i class='bx bx-x'></i>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="selectedJustificatif">
+      <div class="justificatif-details">
+        <!-- En-tête avec QR Code -->
+        <div class="detail-header">
+          <div class="qr-section" *ngIf="selectedJustificatif.qrCode">
+            <img [src]="selectedJustificatif.qrCode" alt="QR Code" class="qr-code">
+          </div>
+          <div class="reference-section">
+            <h3>{{ selectedJustificatif.referenceNumber }}</h3>
+            <span class="status-badge large" [style.background-color]="getStatusColor(selectedJustificatif)">
+              {{ getStatusText(selectedJustificatif) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Informations détaillées -->
+        <div class="details-grid">
+          <div class="detail-section">
+            <h4>Patient</h4>
+            <div class="detail-row">
+              <span class="label">Nom:</span>
+              <span class="value">{{ selectedJustificatif.patient.firstName }} {{ selectedJustificatif.patient.lastName }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Email:</span>
+              <span class="value">{{ selectedJustificatif.patient.email }}</span>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>Médecin</h4>
+            <div class="detail-row">
+              <span class="label">Nom:</span>
+              <span class="value">{{ selectedJustificatif.doctor.firstName }} {{ selectedJustificatif.doctor.lastName }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Spécialité:</span>
+              <span class="value">{{ selectedJustificatif.doctor.specialty }}</span>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>Rendez-vous</h4>
+            <div class="detail-row">
+              <span class="label">Date:</span>
+              <span class="value">{{ formatDateTime(selectedJustificatif.appointment.appointmentDate) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Type:</span>
+              <span class="value">{{ getAppointmentTypeText(selectedJustificatif.appointment.type) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Statut RDV:</span>
+              <span class="value">{{ selectedJustificatif.appointment.status }}</span>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>Informations fichier</h4>
+            <div class="detail-row">
+              <span class="label">Nom du fichier:</span>
+              <span class="value">{{ selectedJustificatif.filename }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Taille:</span>
+              <span class="value">{{ formatFileSize(selectedJustificatif.fileSize) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Type MIME:</span>
+              <span class="value">{{ selectedJustificatif.mimeType }}</span>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>Statistiques</h4>
+            <div class="detail-row">
+              <span class="label">Téléchargements:</span>
+              <span class="value">{{ selectedJustificatif.downloadCount }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedJustificatif.lastDownloadedAt">
+              <span class="label">Dernier téléchargement:</span>
+              <span class="value">{{ formatDateTime(selectedJustificatif.lastDownloadedAt) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Généré le:</span>
+              <span class="value">{{ formatDateTime(selectedJustificatif.generatedAt) }}</span>
+            </div>
+            <div class="detail-row" *ngIf="selectedJustificatif.expiresAt">
+              <span class="label">Expire le:</span>
+              <span class="value">{{ formatDateTime(selectedJustificatif.expiresAt) }}</span>
+            </div>
+          </div>
+
+          <div class="detail-section" *ngIf="selectedJustificatif.payment">
+            <h4>Paiement associé</h4>
+            <div class="detail-row">
+              <span class="label">Montant:</span>
+              <span class="value">{{ selectedJustificatif.payment.amount }}€</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Statut:</span>
+              <span class="value">{{ selectedJustificatif.payment.status }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">Fermer</button>
+      <button class="btn btn-primary" (click)="downloadJustificatif(selectedJustificatif!)">
+        <i class='bx bx-download'></i>
+        Télécharger
+      </button>
+      <button class="btn btn-warning" (click)="previewJustificatif(selectedJustificatif!)">
+        <i class='bx bx-window'></i>
+        Prévisualiser
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de suppression -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+  <div class="modal confirmation-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Confirmer la suppression</h2>
+      <button class="close-btn" (click)="closeDeleteModal()">
+        <i class='bx bx-x'></i>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="justificatifToDelete">
+      <div class="confirmation-content">
+        <i class='bx bx-trash confirmation-icon'></i>
+        <p>Êtes-vous sûr de vouloir supprimer le justificatif :</p>
+        <strong>{{ justificatifToDelete.referenceNumber }}</strong>
+        <p class="warning-text">Cette action est irréversible et supprimera définitivement le fichier PDF.</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeDeleteModal()">Annuler</button>
+      <button class="btn btn-danger" (click)="deleteJustificatif()" [disabled]="isLoading">
+        Supprimer définitivement
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de régénération -->
+<div class="modal-overlay" *ngIf="showRegenerateModal" (click)="closeRegenerateModal()">
+  <div class="modal confirmation-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Régénérer le justificatif</h2>
+      <button class="close-btn" (click)="closeRegenerateModal()">
+        <i class='bx bx-x'></i>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="selectedJustificatif">
+      <div class="confirmation-content">
+        <i class='bx bx-refresh confirmation-icon warning'></i>
+        <p>Voulez-vous régénérer le justificatif :</p>
+        <strong>{{ selectedJustificatif.referenceNumber }}</strong>
+        <p class="info-text">
+          Un nouveau PDF sera généré avec une nouvelle référence. 
+          L'ancien fichier sera remplacé et les statistiques de téléchargement seront remises à zéro.
+        </p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeRegenerateModal()">Annuler</button>
+      <button class="btn btn-warning" (click)="confirmRegenerate()" [disabled]="isLoading" [class.loading]="isLoading">
+        Régénérer
+      </button>
+    </div>
+  </div>
+</div>
