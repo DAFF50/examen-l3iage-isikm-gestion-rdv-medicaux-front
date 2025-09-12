@@ -12,6 +12,12 @@ import { DashboardComponent } from './components/medecin/pages/dashboard/dashboa
 import { PaiementsComponent } from './components/medecin/pages/paiements/paiements.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { AdminDashboardComponent } from './components/admin/pages/dashboard/dashboard.component';
+import { UtilisateursComponent } from './components/admin/pages/utilisateurs/utilisateurs.component';
+import { SpecialitesComponent } from './components/admin/pages/specialites/specialites.component';
+//import { AdminPaiementsComponent } from './components/admin/pages/paiements/paiements.component';
+import { JustificatifsComponent } from './components/admin/pages/justificatifs/justificatifs.component';
+
+
 
 
 
@@ -27,7 +33,12 @@ import { AdminDashboardComponent } from './components/admin/pages/dashboard/dash
     DashboardComponent,
     PaiementsComponent,
     AdminComponent,
-    AdminDashboardComponent
+    AdminDashboardComponent,
+    UtilisateursComponent,
+    SpecialitesComponent,
+    JustificatifsComponent
+    
+    //AdminPaiementsComponent
     
   ],
   imports: [

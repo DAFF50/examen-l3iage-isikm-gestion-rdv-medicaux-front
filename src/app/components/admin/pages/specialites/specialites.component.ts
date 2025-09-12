@@ -1,266 +1,385 @@
-// rendezvous-medecin.component.ts
+// specialites.component.ts
 import { Component, OnInit } from '@angular/core';
+import { AdminService } from '../../services/admin.service';
 
-interface RendezVous {
+export interface Specialty {
   id: number;
-  patientNom: string;
-  patientPrenom: string;
-  patientEmail: string;
-  patientTelephone: string;
-  date: string;
-  heure: string;
-  statut: 'en_attente' | 'confirme' | 'refuse' | 'termine';
-  statutPaiement: 'en_attente' | 'paye' | 'cabinet';
-  motif: string;
-  montant: number;
-  referenceRdv: string;
-}
-
-interface PlageHoraire {
-  id: number;
-  jour: string;
-  heureDebut: string;
-  heureFin: string;
-  dureeSlot: number; // en minutes
-  pauseDebut?: string;
-  pauseFin?: string;
-  actif: boolean;
+  name: string;
+  description: string;
+  isActive: boolean;
+  doctorsCount: number;
+  appointmentsCount: number;
+  averagePrice: number;
+  createdAt: Date;
+  updatedAt: Date;
+  icon?: string;
 }
 
 @Component({
-  selector: 'app-rendezvous',
-  templateUrl: './rendezvous.component.html',
-  styleUrls: ['./rendezvous.component.css']
+  selector: 'app-specialites',
+  templateUrl: './specialites.component.html',
+  styleUrls: ['./specialites.component.css']
 })
-export class RendezvousComponent implements OnInit {
-
-  activeTab: 'rdv' | 'plages' = 'rdv';
-  filtreStatut: string = 'tous';
-  filtreDateDebut: string = '';
-  filtreDateFin: string = '';
-  
-  // Liste des rendez-vous
-  rendezVous: RendezVous[] = [
-    {
-      id: 1,
-      patientNom: 'Diallo',
-      patientPrenom: 'Aminata',
-      patientEmail: 'aminata.diallo@email.com',
-      patientTelephone: '+221 77 123 45 67',
-      date: '2025-09-02',
-      heure: '09:00',
-      statut: 'en_attente',
-      statutPaiement: 'paye',
-      motif: 'Consultation générale - Douleurs abdominales',
-      montant: 15000,
-      referenceRdv: 'RDV-2025-001'
+export class SpecialitesComponent implements OnInit {
+  specialties: Specialty[] = [
+    { 
+      id: 1, 
+      name: 'Cardiologie', 
+      description: 'Spécialité médicale qui traite les troubles du cœur et des vaisseaux sanguins.', 
+      isActive: true, 
+      doctorsCount: 8, 
+      appointmentsCount: 145, 
+      averagePrice: 85000, 
+      createdAt: new Date('2023-01-10'), 
+      updatedAt: new Date('2024-11-15'), 
+      icon: 'bx-heart' 
     },
-    {
-      id: 2,
-      patientNom: 'Ba',
-      patientPrenom: 'Moussa',
-      patientEmail: 'moussa.ba@email.com',
-      patientTelephone: '+221 78 987 65 43',
-      date: '2025-09-02',
-      heure: '10:30',
-      statut: 'confirme',
-      statutPaiement: 'cabinet',
-      motif: 'Suivi cardiologique',
-      montant: 25000,
-      referenceRdv: 'RDV-2025-002'
+    { 
+      id: 2, 
+      name: 'Dermatologie', 
+      description: 'Spécialité qui traite les maladies de la peau, des cheveux et des ongles.', 
+      isActive: true, 
+      doctorsCount: 6, 
+      appointmentsCount: 98, 
+      averagePrice: 75000, 
+      createdAt: new Date('2023-01-10'), 
+      updatedAt: new Date('2024-10-20'), 
+      icon: 'bx-face' 
     },
-    {
-      id: 3,
-      patientNom: 'Ndiaye',
-      patientPrenom: 'Fatou',
-      patientEmail: 'fatou.ndiaye@email.com',
-      patientTelephone: '+221 76 456 78 90',
-      date: '2025-09-03',
-      heure: '14:00',
-      statut: 'en_attente',
-      statutPaiement: 'en_attente',
-      motif: 'Consultation dermatologique',
-      montant: 20000,
-      referenceRdv: 'RDV-2025-003'
+    { 
+      id: 3, 
+      name: 'Pédiatrie', 
+      description: 'Spécialité médicale consacrée aux nourrissons, enfants et adolescents.', 
+      isActive: true, 
+      doctorsCount: 5, 
+      appointmentsCount: 87, 
+      averagePrice: 65000, 
+      createdAt: new Date('2023-02-15'), 
+      updatedAt: new Date('2024-12-01'), 
+      icon: 'bx-baby-carriage' 
+    },
+    { 
+      id: 4, 
+      name: 'Neurologie', 
+      description: 'Spécialité médicale qui traite les maladies du système nerveux.', 
+      isActive: true, 
+      doctorsCount: 4, 
+      appointmentsCount: 72, 
+      averagePrice: 90000, 
+      createdAt: new Date('2023-03-20'), 
+      updatedAt: new Date('2024-11-28'), 
+      icon: 'bx-brain' 
+    },
+    { 
+      id: 5, 
+      name: 'Orthopédie', 
+      description: 'Spécialité chirurgicale qui traite les maladies de l\'appareil locomoteur.', 
+      isActive: false, 
+      doctorsCount: 3, 
+      appointmentsCount: 45, 
+      averagePrice: 80000, 
+      createdAt: new Date('2023-04-12'), 
+      updatedAt: new Date('2024-11-10'), 
+      icon: 'bx-bone' 
+    },
+    { 
+      id: 6, 
+      name: 'Ophtalmologie', 
+      description: 'Spécialité médicale qui traite les maladies de l\'œil et des annexes.', 
+      isActive: true, 
+      doctorsCount: 7, 
+      appointmentsCount: 112, 
+      averagePrice: 70000, 
+      createdAt: new Date('2023-05-08'), 
+      updatedAt: new Date('2024-12-02'), 
+      icon: 'bx-show' 
     }
   ];
 
-  // Plages horaires
-  plagesHoraires: PlageHoraire[] = [
-    { id: 1, jour: 'Lundi', heureDebut: '08:00', heureFin: '12:00', dureeSlot: 30, pauseDebut: '10:00', pauseFin: '10:15', actif: true },
-    { id: 2, jour: 'Lundi', heureDebut: '14:00', heureFin: '18:00', dureeSlot: 30, actif: true },
-    { id: 3, jour: 'Mardi', heureDebut: '08:00', heureFin: '12:00', dureeSlot: 30, actif: true },
-    { id: 4, jour: 'Mercredi', heureDebut: '08:00', heureFin: '12:00', dureeSlot: 30, actif: false },
-    { id: 5, jour: 'Jeudi', heureDebut: '14:00', heureFin: '18:00', dureeSlot: 30, actif: true },
-    { id: 6, jour: 'Vendredi', heureDebut: '08:00', heureFin: '12:00', dureeSlot: 30, actif: true }
-  ];
+  filteredSpecialties: Specialty[] = [];
+  searchTerm: string = '';
+  errorMessage: string = '';
+  successMessage: string = '';
+  isLoading: boolean = false;
+  
+  // Filtres
+  statusFilter: string = 'all'; // all, active, inactive
+  sortBy: string = 'name'; // name, doctorsCount, appointmentsCount, averagePrice
+  sortOrder: 'asc' | 'desc' = 'asc';
 
-  // Variables pour le modal d'ajout de plage
-  showModalPlage = false;
-  nouvellePlage: Partial<PlageHoraire> = {};
+  // Pagination
+  pageIndex = 0;
+  pageSize = 6;
+
+  // Modal
+  showModal = false;
+  editingSpecialty = false;
+  currentSpecialty: Partial<Specialty> = {};
+
+  // Statistiques
+  totalSpecialties = 0;
+  activeSpecialties = 0;
+  totalDoctors = 0;
+  averagePrice = 0;
+
+  Math = Math;
+
+  constructor(private adminService: AdminService) {}
 
   ngOnInit(): void {
-    this.chargerRendezVous();
+    this.loadData();
+    this.calculateStats();
   }
 
-  // Gestion des tabs
-  setActiveTab(tab: 'rdv' | 'plages'): void {
-    this.activeTab = tab;
+  loadData() {
+    this.filteredSpecialties = [...this.specialties];
+    this.applyFilters();
   }
 
-  // Chargement des données
-  chargerRendezVous(): void {
-    // Simulation API call
-    console.log('Chargement des rendez-vous...');
+  calculateStats() {
+    this.totalSpecialties = this.specialties.length;
+    this.activeSpecialties = this.specialties.filter(s => s.isActive).length;
+    this.totalDoctors = this.specialties.reduce((sum, s) => sum + s.doctorsCount, 0);
+    this.averagePrice = this.specialties.reduce((sum, s) => sum + s.averagePrice, 0) / this.specialties.length;
   }
 
-  // Filtrage des rendez-vous
-  get rendezVousFiltres(): RendezVous[] {
-    let filtered = this.rendezVous;
+  get pagedSpecialties() {
+    const start = this.pageIndex * this.pageSize;
+    return this.filteredSpecialties.slice(start, start + this.pageSize);
+  }
 
-    if (this.filtreStatut !== 'tous') {
-      filtered = filtered.filter(rdv => rdv.statut === this.filtreStatut);
+  get totalPages() {
+    return Math.ceil(this.filteredSpecialties.length / this.pageSize);
+  }
+
+  // Recherche et filtrage
+  search() {
+    this.applyFilters();
+    this.pageIndex = 0;
+  }
+
+  onStatusFilterChange() {
+    this.applyFilters();
+    this.pageIndex = 0;
+  }
+
+  applyFilters() {
+    let filtered = [...this.specialties];
+
+    // Filtre par recherche
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(s =>
+        s.name.toLowerCase().includes(term) ||
+        s.description.toLowerCase().includes(term)
+      );
     }
 
-    if (this.filtreDateDebut) {
-      filtered = filtered.filter(rdv => rdv.date >= this.filtreDateDebut);
+    // Filtre par statut
+    if (this.statusFilter === 'active') {
+      filtered = filtered.filter(s => s.isActive);
+    } else if (this.statusFilter === 'inactive') {
+      filtered = filtered.filter(s => !s.isActive);
     }
 
-    if (this.filtreDateFin) {
-      filtered = filtered.filter(rdv => rdv.date <= this.filtreDateFin);
+    // Tri
+    // Tri
+filtered.sort((a, b) => {
+  let aValue = a[this.sortBy as keyof Specialty] ?? '';
+  let bValue = b[this.sortBy as keyof Specialty] ?? '';
+
+  // Si ce sont des strings
+  if (typeof aValue === 'string' && typeof bValue === 'string') {
+    aValue = aValue.toLowerCase();
+    bValue = bValue.toLowerCase();
+  }
+
+  if (aValue < bValue) return this.sortOrder === 'asc' ? -1 : 1;
+  if (aValue > bValue) return this.sortOrder === 'asc' ? 1 : -1;
+  return 0;
+});
+
+
+    this.filteredSpecialties = filtered;
+  }
+
+  // Tri
+  sort(field: string) {
+    if (this.sortBy === field) {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = field;
+      this.sortOrder = 'asc';
     }
-
-    return filtered.sort((a, b) => new Date(a.date + ' ' + a.heure).getTime() - new Date(b.date + ' ' + b.heure).getTime());
+    this.applyFilters();
   }
 
-  // Actions sur les rendez-vous
-  confirmerRendezVous(rdv: RendezVous): void {
-    rdv.statut = 'confirme';
-    console.log(`Rendez-vous ${rdv.id} confirmé`);
-    // API call
-  }
-
-  refuserRendezVous(rdv: RendezVous): void {
-    rdv.statut = 'refuse';
-    console.log(`Rendez-vous ${rdv.id} refusé`);
-    // API call
-  }
-
-  marquerTermine(rdv: RendezVous): void {
-    rdv.statut = 'termine';
-    console.log(`Rendez-vous ${rdv.id} terminé`);
-    // API call
-  }
-
-  // Téléchargement du justificatif PDF
-  telechargerJustificatif(rdv: RendezVous): void {
-    console.log(`Téléchargement du justificatif pour RDV ${rdv.id}`);
-    // Simulation de génération PDF
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(this.genererContenuPDF(rdv)));
-    element.setAttribute('download', `justificatif-${rdv.referenceRdv}.txt`);
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  }
-
-  private genererContenuPDF(rdv: RendezVous): string {
-    return `
-JUSTIFICATIF DE RENDEZ-VOUS MÉDICAL
-===================================
-
-Référence: ${rdv.referenceRdv}
-Date d'émission: ${new Date().toLocaleDateString('fr-FR')}
-
-INFORMATIONS PATIENT:
-- Nom: ${rdv.patientPrenom} ${rdv.patientNom}
-- Email: ${rdv.patientEmail}
-- Téléphone: ${rdv.patientTelephone}
-
-RENDEZ-VOUS:
-- Date: ${new Date(rdv.date).toLocaleDateString('fr-FR')}
-- Heure: ${rdv.heure}
-- Motif: ${rdv.motif}
-- Statut: ${rdv.statut}
-
-PAIEMENT:
-- Montant: ${rdv.montant} FCFA
-- Statut: ${rdv.statutPaiement === 'paye' ? 'Payé en ligne' : rdv.statutPaiement === 'cabinet' ? 'Paiement au cabinet' : 'En attente'}
-
-Ce document certifie la prise de rendez-vous médical.
-    `.trim();
-  }
-
-  // Gestion des plages horaires
-  ajouterPlage(): void {
-    this.nouvellePlage = {
-      jour: 'Lundi',
-      heureDebut: '08:00',
-      heureFin: '12:00',
-      dureeSlot: 30,
-      actif: true
+  // Actions CRUD
+  addSpecialty() {
+    this.editingSpecialty = false;
+    this.currentSpecialty = {
+      name: '',
+      description: '',
+      isActive: true,
+      averagePrice: 50000,
+      icon: 'bx-plus-medical'
     };
-    this.showModalPlage = true;
+    this.showModal = true;
   }
 
-  sauvegarderPlage(): void {
-    if (this.nouvellePlage.jour && this.nouvellePlage.heureDebut && this.nouvellePlage.heureFin) {
-      const nouvellePlage: PlageHoraire = {
-        id: Date.now(),
-        jour: this.nouvellePlage.jour!,
-        heureDebut: this.nouvellePlage.heureDebut!,
-        heureFin: this.nouvellePlage.heureFin!,
-        dureeSlot: this.nouvellePlage.dureeSlot || 30,
-        pauseDebut: this.nouvellePlage.pauseDebut,
-        pauseFin: this.nouvellePlage.pauseFin,
-        actif: this.nouvellePlage.actif || true
-      };
-      
-      this.plagesHoraires.push(nouvellePlage);
-      this.showModalPlage = false;
-      this.nouvellePlage = {};
-      console.log('Nouvelle plage horaire ajoutée');
+  editSpecialty(specialty: Specialty) {
+    this.editingSpecialty = true;
+    this.currentSpecialty = { ...specialty };
+    this.showModal = true;
+  }
+
+  deleteSpecialty(specialty: Specialty) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer la spécialité "${specialty.name}" ?`)) {
+      this.specialties = this.specialties.filter(s => s.id !== specialty.id);
+      this.loadData();
+      this.calculateStats();
+      this.showSuccessMessage('Spécialité supprimée avec succès');
     }
   }
 
-  supprimerPlage(id: number): void {
-    this.plagesHoraires = this.plagesHoraires.filter(plage => plage.id !== id);
-    console.log(`Plage ${id} supprimée`);
+  saveSpecialty() {
+    if (!this.currentSpecialty.name || !this.currentSpecialty.description) {
+      this.showErrorMessage('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
+    this.isLoading = true;
+
+    // Simuler un appel API
+    setTimeout(() => {
+      if (this.editingSpecialty && this.currentSpecialty.id) {
+        // Modifier
+        const index = this.specialties.findIndex(s => s.id === this.currentSpecialty.id);
+        if (index !== -1) {
+          this.specialties[index] = {
+            ...this.specialties[index],
+            ...this.currentSpecialty,
+            updatedAt: new Date()
+          } as Specialty;
+        }
+        this.showSuccessMessage('Spécialité modifiée avec succès');
+      } else {
+        // Ajouter
+        const newSpecialty: Specialty = {
+          id: Math.max(...this.specialties.map(s => s.id)) + 1,
+          name: this.currentSpecialty.name!,
+          description: this.currentSpecialty.description!,
+          isActive: this.currentSpecialty.isActive || true,
+          averagePrice: this.currentSpecialty.averagePrice || 50000,
+          icon: this.currentSpecialty.icon || 'bx-plus-medical',
+          doctorsCount: 0,
+          appointmentsCount: 0,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.specialties.push(newSpecialty);
+        this.showSuccessMessage('Spécialité ajoutée avec succès');
+      }
+
+      this.isLoading = false;
+      this.closeModal();
+      this.loadData();
+      this.calculateStats();
+    }, 800);
   }
 
-  togglePlage(plage: PlageHoraire): void {
-    plage.actif = !plage.actif;
-    console.log(`Plage ${plage.id} ${plage.actif ? 'activée' : 'désactivée'}`);
+  toggleStatus(specialty: Specialty) {
+    specialty.isActive = !specialty.isActive;
+    specialty.updatedAt = new Date();
+    this.calculateStats();
+    this.showSuccessMessage(`Spécialité ${specialty.isActive ? 'activée' : 'désactivée'} avec succès`);
   }
 
-  fermerModal(): void {
-    this.showModalPlage = false;
-    this.nouvellePlage = {};
+  // Modal
+  closeModal() {
+    this.showModal = false;
+    this.editingSpecialty = false;
+    this.currentSpecialty = {};
+  }
+
+  // Pagination
+  nextPage() {
+    if ((this.pageIndex + 1) * this.pageSize < this.filteredSpecialties.length) {
+      this.pageIndex++;
+    }
+  }
+
+  prevPage() {
+    if (this.pageIndex > 0) {
+      this.pageIndex--;
+    }
+  }
+
+  goToPage(page: number) {
+    this.pageIndex = page;
+  }
+
+  // Actions bulk
+  activateAll() {
+    if (confirm('Activer toutes les spécialités ?')) {
+      this.specialties.forEach(s => {
+        s.isActive = true;
+        s.updatedAt = new Date();
+      });
+      this.calculateStats();
+      this.showSuccessMessage('Toutes les spécialités ont été activées');
+    }
   }
 
   // Utilitaires
-  getStatutClass(statut: string): string {
-    switch (statut) {
-      case 'en_attente': return 'statut-attente';
-      case 'confirme': return 'statut-confirme';
-      case 'refuse': return 'statut-refuse';
-      case 'termine': return 'statut-termine';
-      case 'paye': return 'statut-paye';
-      case 'cabinet': return 'statut-cabinet';
-      default: return '';
-    }
+  refresh() {
+    this.isLoading = true;
+    setTimeout(() => {
+      this.loadData();
+      this.calculateStats();
+      this.isLoading = false;
+      this.showSuccessMessage('Données rafraîchies');
+    }, 500);
   }
 
-  getStatutLabel(statut: string): string {
-    switch (statut) {
-      case 'en_attente': return 'En attente';
-      case 'confirme': return 'Confirmé';
-      case 'refuse': return 'Refusé';
-      case 'termine': return 'Terminé';
-      case 'paye': return 'Payé';
-      case 'cabinet': return 'Cabinet';
-      default: return statut;
-    }
+  clearSearch() {
+    this.searchTerm = '';
+    this.statusFilter = 'all';
+    this.sortBy = 'name';
+    this.sortOrder = 'asc';
+    this.pageIndex = 0;
+    this.applyFilters();
+  }
+
+  exportData() {
+    // Simuler l'export
+    const dataStr = JSON.stringify(this.specialties, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `specialites_${new Date().toISOString().split('T')[0]}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+    
+    this.showSuccessMessage('Export réussi');
+  }
+
+  // Messages
+  showSuccessMessage(message: string) {
+    this.successMessage = message;
+    setTimeout(() => this.successMessage = '', 3000);
+  }
+
+  showErrorMessage(message: string) {
+    this.errorMessage = message;
+    setTimeout(() => this.errorMessage = '', 3000);
+  }
+
+  // Getters pour les icônes de tri
+  getSortIcon(field: string): string {
+    if (this.sortBy !== field) return 'bx-sort';
+    return this.sortOrder === 'asc' ? 'bx-sort-up' : 'bx-sort-down';
   }
 }

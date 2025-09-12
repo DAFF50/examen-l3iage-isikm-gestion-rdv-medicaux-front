@@ -1,290 +1,331 @@
-<!-- rendezvous-medecin.component.html -->
-<div class="rdv-container">
-  <!-- En-tête avec navigation par onglets -->
-  <div class="page-header">
-    <h1>Gestion des Rendez-vous</h1>
-    <div class="tabs-nav">
-      <button 
-        class="tab-btn" 
-        [class.active]="activeTab === 'rdv'"
-        (click)="setActiveTab('rdv')">
-        <i class='bx bx-calendar'></i>
-        Mes Rendez-vous
-      </button>
-      <button 
-        class="tab-btn" 
-        [class.active]="activeTab === 'plages'"
-        (click)="setActiveTab('plages')">
-        <i class='bx bx-time'></i>
-        Plages Horaires
-      </button>
+<!-- specialites.component.html -->
+<div class="specialites-container">
+  <!-- En-tête avec statistiques -->
+  <div class="header-section">
+    <div class="title-section">
+      <h2><i class="bx bx-list-ul"></i> Gestion des Spécialités</h2>
+      <p class="subtitle">Gérez les spécialités médicales de votre plateforme</p>
+    </div>
+    
+    <div class="stats-cards">
+      <div class="stat-card">
+        <i class="bx bx-collection"></i>
+        <div class="stat-content">
+          <span class="stat-number">{{totalSpecialties}}</span>
+          <span class="stat-label">Total</span>
+        </div>
+      </div>
+      <div class="stat-card active">
+        <i class="bx bx-check-circle"></i>
+        <div class="stat-content">
+          <span class="stat-number">{{activeSpecialties}}</span>
+          <span class="stat-label">Actives</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="bx bx-user-plus"></i>
+        <div class="stat-content">
+          <span class="stat-number">{{totalDoctors}}</span>
+          <span class="stat-label">Médecins</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="bx bx-money"></i>
+        <div class="stat-content">
+          <span class="stat-number">{{averagePrice | currency:'XOF':'symbol':'1.0-0'}}</span>
+          <span class="stat-label">Prix moyen</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Section Rendez-vous -->
-  <div class="tab-content" *ngIf="activeTab === 'rdv'">
-    <!-- Filtres -->
-    <div class="filters-section">
-      <div class="filter-group">
-        <label for="statut">Statut:</label>
-        <select id="statut" [(ngModel)]="filtreStatut" class="filter-select">
-          <option value="tous">Tous les statuts</option>
-          <option value="en_attente">En attente</option>
-          <option value="confirme">Confirmés</option>
-          <option value="refuse">Refusés</option>
-          <option value="termine">Terminés</option>
-        </select>
-      </div>
-      
-      <div class="filter-group">
-        <label for="dateDebut">Du:</label>
+  <!-- Messages de notification -->
+  <div class="notifications">
+    <div *ngIf="successMessage" class="alert success-alert">
+      <i class="bx bx-check-circle"></i> {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert error-alert">
+      <i class="bx bx-error"></i> {{ errorMessage }}
+    </div>
+  </div>
+
+  <!-- Barre d'actions et filtres -->
+  <div class="actions-section">
+    <div class="search-filters">
+      <div class="search-box">
+        <i class="bx bx-search"></i>
         <input 
-          type="date" 
-          id="dateDebut" 
-          [(ngModel)]="filtreDateDebut"
-          class="filter-input">
-      </div>
-      
-      <div class="filter-group">
-        <label for="dateFin">Au:</label>
-        <input 
-          type="date" 
-          id="dateFin" 
-          [(ngModel)]="filtreDateFin"
-          class="filter-input">
-      </div>
-      
-      <button class="btn btn-outline" (click)="chargerRendezVous()">
-        <i class='bx bx-refresh'></i>
-        Actualiser
-      </button>
-    </div>
-
-    <!-- Liste des rendez-vous -->
-    <div class="rdv-grid">
-      <div class="rdv-card" *ngFor="let rdv of rendezVousFiltres">
-        <!-- Header de la carte -->
-        <div class="rdv-header">
-          <div class="patient-info">
-            <h3>{{ rdv.patientPrenom }} {{ rdv.patientNom }}</h3>
-            <span class="reference">{{ rdv.referenceRdv }}</span>
-          </div>
-          <div class="rdv-status-badges">
-            <span class="statut-badge" [class]="getStatutClass(rdv.statut)">
-              {{ getStatutLabel(rdv.statut) }}
-            </span>
-            <span class="paiement-badge" [class]="getStatutClass(rdv.statutPaiement)">
-              {{ rdv.statutPaiement === 'paye' ? 'Payé' : rdv.statutPaiement === 'cabinet' ? 'Cabinet' : 'En attente' }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Contenu de la carte -->
-        <div class="rdv-content">
-          <div class="rdv-datetime">
-            <div class="datetime-item">
-              <i class='bx bx-calendar'></i>
-              <span>{{ rdv.date | date:'EEEE dd MMMM yyyy':'':'fr' }}</span>
-            </div>
-            <div class="datetime-item">
-              <i class='bx bx-time'></i>
-              <span>{{ rdv.heure }}</span>
-            </div>
-          </div>
-
-          <div class="rdv-details">
-            <div class="detail-item">
-              <strong>Motif:</strong>
-              <span>{{ rdv.motif }}</span>
-            </div>
-            <div class="detail-item">
-              <strong>Contact:</strong>
-              <span>{{ rdv.patientTelephone }}</span>
-            </div>
-            <div class="detail-item">
-              <strong>Email:</strong>
-              <span>{{ rdv.patientEmail }}</span>
-            </div>
-            <div class="detail-item">
-              <strong>Montant:</strong>
-              <span class="montant">{{ rdv.montant | currency:'XOF':'symbol':'1.0-0' }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="rdv-actions">
-          <!-- Actions selon le statut -->
-          <div class="action-group" *ngIf="rdv.statut === 'en_attente'">
-            <button class="btn btn-success btn-sm" (click)="confirmerRendezVous(rdv)">
-              <i class='bx bx-check'></i>
-              Confirmer
-            </button>
-            <button class="btn btn-danger btn-sm" (click)="refuserRendezVous(rdv)">
-              <i class='bx bx-x'></i>
-              Refuser
-            </button>
-          </div>
-
-          <div class="action-group" *ngIf="rdv.statut === 'confirme'">
-            <button class="btn btn-primary btn-sm" (click)="marquerTermine(rdv)">
-              <i class='bx bx-check-circle'></i>
-              Marquer terminé
-            </button>
-          </div>
-
-          <!-- Actions communes -->
-          <button 
-            class="btn btn-outline btn-sm" 
-            (click)="telechargerJustificatif(rdv)"
-            [disabled]="rdv.statut === 'refuse'">
-            <i class='bx bx-download'></i>
-            Justificatif PDF
-          </button>
-        </div>
-      </div>
-
-      <!-- Message si aucun rendez-vous -->
-      <div class="empty-state" *ngIf="rendezVousFiltres.length === 0">
-        <i class='bx bx-calendar-x'></i>
-        <h3>Aucun rendez-vous trouvé</h3>
-        <p>Aucun rendez-vous ne correspond aux critères sélectionnés.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section Plages Horaires -->
-  <div class="tab-content" *ngIf="activeTab === 'plages'">
-    <div class="plages-header">
-      <h2>Mes Plages Horaires</h2>
-      <button class="btn btn-primary" (click)="ajouterPlage()">
-        <i class='bx bx-plus'></i>
-        Ajouter une plage
-      </button>
-    </div>
-
-    <div class="plages-grid">
-      <div class="plage-card" *ngFor="let plage of plagesHoraires">
-        <div class="plage-header">
-          <h3>{{ plage.jour }}</h3>
-          <div class="plage-status">
-            <span class="statut-badge" [class]="plage.actif ? 'statut-disponible' : 'statut-indisponible'">
-              {{ plage.actif ? 'Actif' : 'Inactif' }}
-            </span>
-          </div>
-        </div>
-
-        <div class="plage-content">
-          <div class="plage-info">
-            <div class="info-item">
-              <i class='bx bx-time'></i>
-              <span>{{ plage.heureDebut }} - {{ plage.heureFin }}</span>
-            </div>
-            <div class="info-item">
-              <i class='bx bx-timer'></i>
-              <span>Slots de {{ plage.dureeSlot }}min</span>
-            </div>
-            <div class="info-item" *ngIf="plage.pauseDebut && plage.pauseFin">
-              <i class='bx bx-pause'></i>
-              <span>Pause: {{ plage.pauseDebut }} - {{ plage.pauseFin }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="plage-actions">
-          <button 
-            class="btn btn-sm"
-            [class]="plage.actif ? 'btn-warning' : 'btn-success'"
-            (click)="togglePlage(plage)">
-            <i class="bx" [class]="plage.actif ? 'bx-pause' : 'bx-play'"></i>
-            {{ plage.actif ? 'Désactiver' : 'Activer' }}
-          </button>
-          <button class="btn btn-danger btn-sm" (click)="supprimerPlage(plage.id)">
-            <i class='bx bx-trash'></i>
-            Supprimer
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal pour ajouter une plage horaire -->
-  <div class="modal-overlay" *ngIf="showModalPlage" (click)="fermerModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Ajouter une plage horaire</h3>
-        <button class="modal-close" (click)="fermerModal()">
-          <i class='bx bx-x'></i>
+          [(ngModel)]="searchTerm" 
+          (input)="search()" 
+          placeholder="Rechercher une spécialité..."
+          class="search-input"
+        />
+        <button *ngIf="searchTerm" (click)="clearSearch()" class="clear-search">
+          <i class="bx bx-x"></i>
         </button>
       </div>
+      
+      <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()" class="filter-select">
+        <option value="all">Tous les statuts</option>
+        <option value="active">Actives seulement</option>
+        <option value="inactive">Inactives seulement</option>
+      </select>
+    </div>
+    
+    <div class="action-buttons">
+      <button (click)="refresh()" class="btn btn-secondary" [disabled]="isLoading">
+        <i class="bx bx-refresh" [class.spinning]="isLoading"></i> Rafraîchir
+      </button>
+      <button (click)="exportData()" class="btn btn-outline">
+        <i class="bx bx-download"></i> Exporter
+      </button>
+      <button (click)="addSpecialty()" class="btn btn-primary">
+        <i class="bx bx-plus"></i> Nouvelle Spécialité
+      </button>
+    </div>
+  </div>
 
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="jour">Jour de la semaine</label>
-          <select id="jour" [(ngModel)]="nouvellePlage.jour" class="form-input">
-            <option value="Lundi">Lundi</option>
-            <option value="Mardi">Mardi</option>
-            <option value="Mercredi">Mercredi</option>
-            <option value="Jeudi">Jeudi</option>
-            <option value="Vendredi">Vendredi</option>
-            <option value="Samedi">Samedi</option>
-            <option value="Dimanche">Dimanche</option>
-          </select>
+  <!-- Options de tri -->
+  <div class="sort-section">
+    <span class="sort-label">Trier par :</span>
+    <button 
+      *ngFor="let option of [
+        {field: 'name', label: 'Nom'},
+        {field: 'doctorsCount', label: 'Médecins'},
+        {field: 'appointmentsCount', label: 'RDV'},
+        {field: 'averagePrice', label: 'Prix'}
+      ]"
+      (click)="sort(option.field)" 
+      class="sort-btn"
+      [class.active]="sortBy === option.field">
+      {{option.label}} <i class="bx {{getSortIcon(option.field)}}"></i>
+    </button>
+  </div>
+
+  <!-- Loader global -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="loading-spinner">
+      <i class="bx bx-loader-alt"></i>
+      <span>Chargement en cours...</span>
+    </div>
+  </div>
+
+  <!-- Grille des spécialités -->
+  <div class="specialties-section" *ngIf="!isLoading">
+    <div class="results-info">
+      <span>{{filteredSpecialties.length}} résultat(s) trouvé(s)</span>
+      <div class="bulk-actions" *ngIf="filteredSpecialties.length > 0">
+        <button (click)="activateAll()" class="btn btn-sm btn-success">
+          <i class="bx bx-check"></i> Tout activer
+        </button>
+      </div>
+    </div>
+
+    <div class="specialties-grid" *ngIf="filteredSpecialties.length > 0">
+      <div class="specialty-card" *ngFor="let sp of pagedSpecialties" [class.inactive-card]="!sp.isActive">
+        <div class="card-header">
+          <i class="bx {{sp.icon}}" [class.inactive-icon]="!sp.isActive"></i>
+          <div class="status-badge" [class.active]="sp.isActive" [class.inactive]="!sp.isActive">
+            <i class="bx" [class.bx-check-circle]="sp.isActive" [class.bx-x-circle]="!sp.isActive"></i>
+            {{ sp.isActive ? 'Active' : 'Inactive' }}
+          </div>
         </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="heureDebut">Heure de début</label>
-            <input 
-              type="time" 
-              id="heureDebut" 
-              [(ngModel)]="nouvellePlage.heureDebut"
-              class="form-input">
+        
+        <div class="card-body">
+          <h3 class="specialty-name">{{ sp.name }}</h3>
+          <p class="specialty-description">{{ sp.description }}</p>
+          
+          <div class="stats-grid">
+            <div class="stat-item">
+              <i class="bx bx-user-plus"></i>
+              <span class="stat-value">{{ sp.doctorsCount }}</span>
+              <span class="stat-label">Médecins</span>
+            </div>
+            <div class="stat-item">
+              <i class="bx bx-calendar"></i>
+              <span class="stat-value">{{ sp.appointmentsCount }}</span>
+              <span class="stat-label">RDV</span>
+            </div>
+            <div class="stat-item">
+              <i class="bx bx-money"></i>
+              <span class="stat-value">{{ sp.averagePrice | currency:'XOF':'symbol':'1.0-0' }}</span>
+              <span class="stat-label">Prix</span>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="heureFin">Heure de fin</label>
-            <input 
-              type="time" 
-              id="heureFin" 
-              [(ngModel)]="nouvellePlage.heureFin"
-              class="form-input">
+          
+          <div class="card-footer">
+            <small class="last-updated">
+              <i class="bx bx-time"></i>
+              Mis à jour le {{ sp.updatedAt | date:'dd/MM/yyyy à HH:mm' }}
+            </small>
           </div>
         </div>
-
-        <div class="form-group">
-          <label for="dureeSlot">Durée des créneaux (minutes)</label>
-          <select id="dureeSlot" [(ngModel)]="nouvellePlage.dureeSlot" class="form-input">
-            <option [ngValue]="15">15 minutes</option>
-            <option [ngValue]="30">30 minutes</option>
-            <option [ngValue]="45">45 minutes</option>
-            <option [ngValue]="60">60 minutes</option>
-          </select>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="pauseDebut">Pause début (optionnel)</label>
-            <input 
-              type="time" 
-              id="pauseDebut" 
-              [(ngModel)]="nouvellePlage.pauseDebut"
-              class="form-input">
-          </div>
-          <div class="form-group">
-            <label for="pauseFin">Pause fin (optionnel)</label>
-            <input 
-              type="time" 
-              id="pauseFin" 
-              [(ngModel)]="nouvellePlage.pauseFin"
-              class="form-input">
-          </div>
+        
+        <div class="card-actions">
+          <button (click)="editSpecialty(sp)" class="btn-action btn-edit" title="Modifier">
+            <i class="bx bx-edit"></i>
+          </button>
+          <button 
+            (click)="toggleStatus(sp)" 
+            class="btn-action"
+            [class.btn-activate]="!sp.isActive"
+            [class.btn-deactivate]="sp.isActive"
+            [title]="sp.isActive ? 'Désactiver' : 'Activer'">
+            <i class="bx" [class.bx-toggle-left]="!sp.isActive" [class.bx-toggle-right]="sp.isActive"></i>
+          </button>
+          <button (click)="deleteSpecialty(sp)" class="btn-action btn-delete" title="Supprimer">
+            <i class="bx bx-trash"></i>
+          </button>
         </div>
       </div>
+    </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-outline" (click)="fermerModal()">Annuler</button>
-        <button class="btn btn-primary" (click)="sauvegarderPlage()">Sauvegarder</button>
+    <!-- État vide -->
+    <div *ngIf="filteredSpecialties.length === 0" class="empty-state">
+      <i class="bx bx-search-alt"></i>
+      <h3>Aucune spécialité trouvée</h3>
+      <p>Aucune spécialité ne correspond à vos critères de recherche.</p>
+      <button (click)="clearSearch()" class="btn btn-primary">
+        <i class="bx bx-refresh"></i> Réinitialiser les filtres
+      </button>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-section" *ngIf="!isLoading && filteredSpecialties.length > pageSize">
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="pageIndex === 0" class="pagination-btn">
+        <i class="bx bx-chevron-left"></i> Précédent
+      </button>
+      
+      <div class="pagination-pages">
+        <span class="page-info">
+          Page {{ pageIndex + 1 }} sur {{ totalPages }}
+        </span>
+        <div class="page-numbers">
+          <button 
+            *ngFor="let page of [].constructor(Math.min(totalPages, 5)); let i = index"
+            (click)="goToPage(i)"
+            class="page-btn"
+            [class.active]="i === pageIndex">
+            {{ i + 1 }}
+          </button>
+        </div>
       </div>
+      
+      <button 
+        (click)="nextPage()" 
+        [disabled]="(pageIndex + 1) * pageSize >= filteredSpecialties.length"
+        class="pagination-btn">
+        Suivant <i class="bx bx-chevron-right"></i>
+      </button>
+    </div>
+    
+    <div class="pagination-info">
+      Affichage de {{ (pageIndex * pageSize) + 1 }} à 
+      {{ Math.min((pageIndex + 1) * pageSize, filteredSpecialties.length) }} 
+      sur {{ filteredSpecialties.length }} résultats
+    </div>
+  </div>
+</div>
+
+<!-- Modal pour ajout/modification -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <i class="bx" [class.bx-plus]="!editingSpecialty" [class.bx-edit]="editingSpecialty"></i>
+        {{ editingSpecialty ? 'Modifier la spécialité' : 'Nouvelle spécialité' }}
+      </h3>
+      <button (click)="closeModal()" class="close-btn">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <form (ngSubmit)="saveSpecialty()" #specialtyForm="ngForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Nom de la spécialité *</label>
+            <input 
+              type="text" 
+              id="name"
+              [(ngModel)]="currentSpecialty.name" 
+              name="name" 
+              required 
+              class="form-control"
+              placeholder="Ex: Cardiologie">
+          </div>
+          
+          <div class="form-group">
+            <label for="icon">Icône</label>
+            <select 
+              id="icon"
+              [(ngModel)]="currentSpecialty.icon" 
+              name="icon" 
+              class="form-control">
+              <option value="bx-heart">Cœur (Cardiologie)</option>
+              <option value="bx-face">Visage (Dermatologie)</option>
+              <option value="bx-baby-carriage">Bébé (Pédiatrie)</option>
+              <option value="bx-brain">Cerveau (Neurologie)</option>
+              <option value="bx-bone">Os (Orthopédie)</option>
+              <option value="bx-show">Œil (Ophtalmologie)</option>
+              <option value="bx-plus-medical">Croix médicale</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea 
+            id="description"
+            [(ngModel)]="currentSpecialty.description" 
+            name="description" 
+            required 
+            rows="3"
+            class="form-control"
+            placeholder="Description détaillée de la spécialité..."></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="price">Prix moyen (FCFA)</label>
+            <input 
+              type="number" 
+              id="price"
+              [(ngModel)]="currentSpecialty.averagePrice" 
+              name="price" 
+              min="0"
+              step="1000"
+              class="form-control"
+              placeholder="50000">
+          </div>
+          
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="currentSpecialty.isActive" 
+                name="isActive">
+              <span class="checkbox-custom"></span>
+              Spécialité active
+            </label>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" (click)="closeModal()" class="btn btn-secondary">
+            <i class="bx bx-x"></i> Annuler
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!specialtyForm.valid || isLoading">
+            <i class="bx" [class.bx-save]="!isLoading" [class.bx-loader-alt]="isLoading"></i>
+            {{ isLoading ? 'Enregistrement...' : (editingSpecialty ? 'Modifier' : 'Ajouter') }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

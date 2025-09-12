@@ -1,232 +1,330 @@
-<!-- paiements-medecin.component.html -->
-<div class="paiements-container">
-  <!-- En-tête -->
+<div class="utilisateurs-container">
   <div class="page-header">
-    <h1>Gestion des Paiements</h1>
-    <div class="header-actions">
-      <div class="view-toggle">
-        <button 
-          class="toggle-btn"
-          [class.active]="viewMode === 'liste'"
-          (click)="setViewMode('liste')">
-          <i class='bx bx-list-ul'></i>
-          Liste
-        </button>
-        <button 
-          class="toggle-btn"
-          [class.active]="viewMode === 'stats'"
-          (click)="setViewMode('stats')">
-          <i class='bx bx-bar-chart-alt-2'></i>
-          Statistiques
-        </button>
-      </div>
-      <button class="btn btn-primary" (click)="exporterDonnees()">
-        <i class='bx bx-download'></i>
-        Exporter
-      </button>
+    <div class="header-content">
+      <h1>Gestion des Utilisateurs</h1>
+      <p>Gérer les patients, médecins et administrateurs de la plateforme</p>
     </div>
+    <button class="create-btn" (click)="createUser()">
+      <i class='bx bx-plus'></i>
+      Nouvel utilisateur
+    </button>
   </div>
 
-  <!-- Vue Statistiques -->
-  <div class="stats-view" *ngIf="viewMode === 'stats'">
-    <!-- Cartes statistiques principales -->
-    <div class="stats-grid">
-      <div class="stat-card highlight">
-        <div class="stat-icon">
-          <i class='bx bx-wallet'></i>
-        </div>
-        <div class="stat-content">
-          <h3>{{ statistiques.totalMois | currency:'XOF':'symbol':'1.0-0' }}</h3>
-          <p>Revenus Total</p>
-          <span class="stat-change positive">+12% ce mois</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon online">
-          <i class='bx bx-credit-card'></i>
-        </div>
-        <div class="stat-content">
-          <h3>{{ statistiques.totalEnLigne | currency:'XOF':'symbol':'1.0-0' }}</h3>
-          <p>Paiements En Ligne</p>
-          <span class="stat-percentage">{{ statistiques.tauxPaiementEnLigne | number:'1.0-0' }}%</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon cabinet">
-          <i class='bx bx-store'></i>
-        </div>
-        <div class="stat-content">
-          <h3>{{ statistiques.totalCabinet | currency:'XOF':'symbol':'1.0-0' }}</h3>
-          <p>Paiements Cabinet</p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">
-          <i class='bx bx-receipt'></i>
-        </div>
-        <div class="stat-content">
-          <h3>{{ statistiques.nombrePaiements }}</h3>
-          <p>Transactions</p>
-          <span class="stat-detail">{{ statistiques.nombreRemboursements }} remboursements</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Graphique simple des revenus -->
-    <div class="chart-section">
-      <div class="section-card">
-        <div class="section-header">
-          <h2>Évolution des Revenus</h2>
-          <select [(ngModel)]="filtreMois" class="month-selector" (ngModelChange)="calculerStatistiques()">
-            <option value="2025-09">Septembre 2025</option>
-            <option value="2025-08">Août 2025</option>
-            <option value="2025-07">Juillet 2025</option>
-            <option value="2025-06">Juin 2025</option>
-          </select>
-        </div>
-        
-        <div class="simple-chart">
-          <div class="chart-bars">
-            <div class="bar" *ngFor="let donnee of donneesGraphique.slice(0, 7)">
-              <div class="bar-fill" [style.height.%]="(donnee.montant / 30000) * 100">
-                <span class="bar-value">{{ donnee.montant | currency:'XOF':'symbol':'1.0-0' }}</span>
-              </div>
-              <span class="bar-label">{{ donnee.date }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Vue Liste -->
-  <div class="list-view" *ngIf="viewMode === 'liste'">
-    <!-- Filtres -->
-    <div class="filters-section">
-      <div class="filter-group">
-        <label for="statut">Statut:</label>
-        <select id="statut" [(ngModel)]="filtreStatut" class="filter-select">
-          <option value="tous">Tous</option>
-          <option value="en_attente">En attente</option>
-          <option value="paye">Payés</option>
-          <option value="rembourse">Remboursés</option>
-          <option value="annule">Annulés</option>
-        </select>
-      </div>
-      
-      <div class="filter-group">
-        <label for="type">Type:</label>
-        <select id="type" [(ngModel)]="filtreType" class="filter-select">
-          <option value="tous">Tous</option>
-          <option value="en_ligne">En ligne</option>
-          <option value="cabinet">Cabinet</option>
-        </select>
-      </div>
-      
-      <div class="filter-group">
-        <label for="mois">Mois:</label>
+  <!-- Section des filtres -->
+  <div class="filters-section">
+    <div class="search-container">
+      <div class="search-box">
+        <i class='bx bx-search'></i>
         <input 
-          type="month" 
-          id="mois" 
-          [(ngModel)]="filtreMois"
-          class="filter-input">
+          type="text" 
+          placeholder="Rechercher par nom, email ou téléphone..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+        >
       </div>
+    </div>
+    
+    <div class="filters-row">
+      <select [(ngModel)]="selectedRole" (change)="onFilterChange()" class="filter-select">
+        <option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
+      </select>
       
-      <button class="btn btn-outline" (click)="actualiserDonnees()">
-        <i class='bx bx-refresh'></i>
-        Actualiser
+      <select [(ngModel)]="selectedStatus" (change)="onFilterChange()" class="filter-select">
+        <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
+      </select>
+
+      <div class="results-info">
+        {{ filteredUsers.length }} utilisateur(s) trouvé(s)
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau des utilisateurs -->
+  <div class="table-container">
+    <div class="table-wrapper">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th (click)="sort('name')" class="sortable">
+              Utilisateur
+              <i class='bx' [class.bx-chevron-up]="sortBy === 'name' && sortDirection === 'asc'"
+                 [class.bx-chevron-down]="sortBy === 'name' && sortDirection === 'desc'"
+                 [class.bx-sort]="sortBy !== 'name'"></i>
+            </th>
+            <th (click)="sort('email')" class="sortable">
+              Email
+              <i class='bx' [class.bx-chevron-up]="sortBy === 'email' && sortDirection === 'asc'"
+                 [class.bx-chevron-down]="sortBy === 'email' && sortDirection === 'desc'"
+                 [class.bx-sort]="sortBy !== 'email'"></i>
+            </th>
+            <th>Téléphone</th>
+            <th (click)="sort('role')" class="sortable">
+              Rôle
+              <i class='bx' [class.bx-chevron-up]="sortBy === 'role' && sortDirection === 'asc'"
+                 [class.bx-chevron-down]="sortBy === 'role' && sortDirection === 'desc'"
+                 [class.bx-sort]="sortBy !== 'role'"></i>
+            </th>
+            <th>Statut</th>
+            <th>Spécialité</th>
+            <th>RDV</th>
+            <th (click)="sort('createdAt')" class="sortable">
+              Inscription
+              <i class='bx' [class.bx-chevron-up]="sortBy === 'createdAt' && sortDirection === 'asc'"
+                 [class.bx-chevron-down]="sortBy === 'createdAt' && sortDirection === 'desc'"
+                 [class.bx-sort]="sortBy !== 'createdAt'"></i>
+            </th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of getPaginatedUsers()" 
+              [class.inactive-row]="!user.isActive">
+            <td class="user-info">
+              <div class="user-avatar" [style.background-color]="getRoleColor(user.role)">
+                <i class='bx' 
+                   [class.bx-user-circle]="user.role === 'doctor'"
+                   [class.bx-user]="user.role === 'patient'"
+                   [class.bx-shield]="user.role === 'admin'"></i>
+              </div>
+              <div class="user-details">
+                <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+                <span class="user-id">#{{ user.id }}</span>
+              </div>
+            </td>
+            <td class="user-email">{{ user.email }}</td>
+            <td class="user-phone">{{ user.phone || '-' }}</td>
+            <td>
+              <span class="role-badge" [style.background-color]="getRoleColor(user.role)">
+                {{ getRoleText(user.role) }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" 
+                    [style.background-color]="getStatusColor(user.isActive)"
+                    [class.inactive]="!user.isActive">
+                {{ getStatusText(user.isActive) }}
+              </span>
+            </td>
+            <td class="specialty">{{ user.specialty || '-' }}</td>
+            <td class="appointments-count">
+              <span *ngIf="user.appointmentsCount !== undefined" class="count-badge">
+                {{ user.appointmentsCount }}
+              </span>
+              <span *ngIf="user.appointmentsCount === undefined">-</span>
+            </td>
+            <td class="creation-date">{{ formatDate(user.createdAt) }}</td>
+            <td class="actions">
+              <div class="action-buttons">
+                <button class="action-btn view" (click)="viewUser(user)" title="Voir les détails">
+                  <i class='bx bx-show'></i>
+                </button>
+                <button class="action-btn edit" (click)="editUser(user)" title="Modifier">
+                  <i class='bx bx-edit'></i>
+                </button>
+                <button class="action-btn toggle" 
+                        (click)="toggleUserStatus(user)" 
+                        [title]="user.isActive ? 'Désactiver' : 'Activer'">
+                  <i class='bx' [class.bx-toggle-left]="!user.isActive" [class.bx-toggle-right]="user.isActive"></i>
+                </button>
+                <button class="action-btn delete" 
+                        (click)="confirmDelete(user)" 
+                        title="Supprimer"
+                        [disabled]="user.role === 'admin'">
+                  <i class='bx bx-trash'></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <!-- Message si aucun utilisateur -->
+      <div *ngIf="getPaginatedUsers().length === 0" class="no-data">
+        <i class='bx bx-user-x'></i>
+        <h3>Aucun utilisateur trouvé</h3>
+        <p>Aucun utilisateur ne correspond aux critères de recherche</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button class="page-btn" 
+            [disabled]="currentPage === 1" 
+            (click)="onPageChange(currentPage - 1)">
+      <i class='bx bx-chevron-left'></i>
+    </button>
+    
+    <span class="page-info">
+      Page {{ currentPage }} sur {{ totalPages }}
+    </span>
+    
+    <button class="page-btn" 
+            [disabled]="currentPage === totalPages" 
+            (click)="onPageChange(currentPage + 1)">
+      <i class='bx bx-chevron-right'></i>
+    </button>
+  </div>
+</div>
+
+<!-- Modal utilisateur -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>
+        <span *ngIf="modalMode === 'view'">Détails de l'utilisateur</span>
+        <span *ngIf="modalMode === 'edit'">Modifier l'utilisateur</span>
+        <span *ngIf="modalMode === 'create'">Créer un utilisateur</span>
+      </h2>
+      <button class="close-btn" (click)="closeModal()">
+        <i class='bx bx-x'></i>
       </button>
     </div>
 
-    <!-- Table des paiements -->
-    <div class="paiements-table">
-      <div class="table-header">
-        <div class="header-cell">Patient</div>
-        <div class="header-cell">RDV</div>
-        <div class="header-cell">Montant</div>
-        <div class="header-cell">Type</div>
-        <div class="header-cell">Statut</div>
-        <div class="header-cell">Date</div>
-        <div class="header-cell">Actions</div>
-      </div>
-
-      <div class="table-body">
-        <div class="table-row" *ngFor="let paiement of paiementsFiltres">
-          <div class="table-cell">
-            <div class="patient-info">
-              <strong>{{ paiement.patientPrenom }} {{ paiement.patientNom }}</strong>
-              <small>{{ paiement.referenceRdv }}</small>
-            </div>
+    <div class="modal-body" *ngIf="selectedUser">
+      <form class="user-form" *ngIf="modalMode !== 'view'">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Prénom *</label>
+            <input type="text" 
+                   id="firstName" 
+                   [(ngModel)]="selectedUser.firstName" 
+                   name="firstName" 
+                   required>
           </div>
-
-          <div class="table-cell">
-            <div class="rdv-info">
-              <span class="rdv-date">{{ paiement.dateRendezVous | date:'dd/MM/yyyy' }}</span>
-              <span class="rdv-heure">{{ paiement.heureRendezVous }}</span>
-            </div>
-          </div>
-
-          <div class="table-cell">
-            <div class="montant-info">
-              <strong class="montant">{{ paiement.montant | currency:'XOF':'symbol':'1.0-0' }}</strong>
-              <small class="methode">{{ getMethodePaiementLabel(paiement.methodePaiement) }}</small>
-            </div>
-          </div>
-
-          <div class="table-cell">
-            <span class="type-badge" [class]="getTypeClass(paiement.typePaiement)">
-              {{ paiement.typePaiement === 'en_ligne' ? 'En ligne' : 'Cabinet' }}
-            </span>
-          </div>
-
-          <div class="table-cell">
-            <span class="statut-badge" [class]="getStatutClass(paiement.statut)">
-              {{ getStatutLabel(paiement.statut) }}
-            </span>
-          </div>
-
-          <div class="table-cell">
-            <div class="date-info">
-              {{ paiement.datePaiement ? (paiement.datePaiement | date:'dd/MM/yyyy') : 'En attente' }}
-            </div>
-          </div>
-
-          <div class="table-cell">
-            <div class="action-buttons">
-              <button 
-                class="btn btn-outline btn-sm"
-                (click)="telechargerRecu(paiement)"
-                [disabled]="paiement.statut === 'en_attente'">
-                <i class='bx bx-download'></i>
-              </button>
-
-              <button 
-                class="btn btn-warning btn-sm"
-                *ngIf="paiement.statut === 'paye'"
-                (click)="rembourserPaiement(paiement)">
-                <i class='bx bx-undo'></i>
-              </button>
-
-              <button 
-                class="btn btn-danger btn-sm"
-                *ngIf="paiement.statut === 'en_attente'"
-                (click)="annulerPaiement(paiement)">
-                <i class='bx bx-x'></i>
-              </button>
-            </div>
+          <div class="form-group">
+            <label for="lastName">Nom *</label>
+            <input type="text" 
+                   id="lastName" 
+                   [(ngModel)]="selectedUser.lastName" 
+                   name="lastName" 
+                   required>
           </div>
         </div>
-      </div>
 
-      <!-- Message si aucun paiement -->
-      <div class="empty-state" *ngIf="paiementsFiltres.length === 0">
-        <i class='bx bx-wallet'></i>
-        <h3>Aucun paiement trouvé</h3>
-        <p>Aucun paiement ne correspond aux critères sélectionnés.</p>
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" 
+                 id="email" 
+                 [(ngModel)]="selectedUser.email" 
+                 name="email" 
+                 required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Téléphone</label>
+            <input type="tel" 
+                   id="phone" 
+                   [(ngModel)]="selectedUser.phone" 
+                   name="phone">
+          </div>
+          <div class="form-group">
+            <label for="role">Rôle *</label>
+            <select id="role" [(ngModel)]="selectedUser.role" name="role" required>
+              <option value="patient">Patient</option>
+              <option value="doctor">Médecin</option>
+              <option value="admin">Administrateur</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" 
+                   [(ngModel)]="selectedUser.isActive" 
+                   name="isActive">
+            <span class="checkmark"></span>
+            Compte actif
+          </label>
+        </div>
+      </form>
+
+      <!-- Mode visualisation -->
+      <div class="user-details-view" *ngIf="modalMode === 'view'">
+        <div class="detail-row">
+          <span class="label">Nom complet:</span>
+          <span class="value">{{ selectedUser.firstName }} {{ selectedUser.lastName }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Email:</span>
+          <span class="value">{{ selectedUser.email }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Téléphone:</span>
+          <span class="value">{{ selectedUser.phone || 'Non renseigné' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Rôle:</span>
+          <span class="value">
+            <span class="role-badge" [style.background-color]="getRoleColor(selectedUser.role)">
+              {{ getRoleText(selectedUser.role) }}
+            </span>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Statut:</span>
+          <span class="value">
+            <span class="status-badge" [style.background-color]="getStatusColor(selectedUser.isActive)">
+              {{ getStatusText(selectedUser.isActive) }}
+            </span>
+          </span>
+        </div>
+        <div class="detail-row" *ngIf="selectedUser.specialty">
+          <span class="label">Spécialité:</span>
+          <span class="value">{{ selectedUser.specialty }}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedUser.appointmentsCount !== undefined">
+          <span class="label">Nombre de RDV:</span>
+          <span class="value">{{ selectedUser.appointmentsCount }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Date d'inscription:</span>
+          <span class="value">{{ formatDate(selectedUser.createdAt) }}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedUser.lastLogin">
+          <span class="label">Dernière connexion:</span>
+          <span class="value">{{ formatDate(selectedUser.lastLogin) }}</span>
+        </div>
       </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeModal()">
+        {{ modalMode === 'view' ? 'Fermer' : 'Annuler' }}
+      </button>
+      <button class="btn btn-primary" 
+              *ngIf="modalMode !== 'view'" 
+              (click)="saveUser()"
+              [disabled]="!isFormValid()">
+        {{ modalMode === 'create' ? 'Créer' : 'Sauvegarder' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+  <div class="modal confirmation-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Confirmer la suppression</h2>
+      <button class="close-btn" (click)="closeDeleteModal()">
+        <i class='bx bx-x'></i>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="userToDelete">
+      <div class="confirmation-content">
+        <i class='bx bx-trash confirmation-icon'></i>
+        <p>Êtes-vous sûr de vouloir supprimer l'utilisateur :</p>
+        <strong>{{ userToDelete.firstName }} {{ userToDelete.lastName }}</strong>
+        <p class="warning-text">Cette action est irréversible.</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeDeleteModal()">Annuler</button>
+      <button class="btn btn-danger" (click)="deleteUser()">Supprimer</button>
     </div>
   </div>
 </div>

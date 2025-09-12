@@ -11,6 +11,12 @@ import {PaiementsComponent} from './components/medecin/pages/paiements/paiements
 
 import { AdminComponent } from './components/admin/admin.component';
 import { AdminDashboardComponent } from './components/admin/pages/dashboard/dashboard.component';
+import { UtilisateursComponent } from './components/admin/pages/utilisateurs/utilisateurs.component';
+import { SpecialitesComponent } from './components/admin/pages/specialites/specialites.component';
+//import { AdminPaiementsComponent } from './components/admin/pages/paiements/paiements.component';
+import { JustificatifsComponent } from './components/admin/pages/justificatifs/justificatifs.component';
+
+
 
 
 const routes: Routes = [
@@ -31,7 +37,12 @@ const routes: Routes = [
     path: 'admin',
     component: AdminComponent,
     children: [
-      { path: 'dashboard', component: AdminDashboardComponent }
+      { path: 'dashboard', component: AdminDashboardComponent },
+      { path: 'utilisateurs', component: UtilisateursComponent },
+      { path: 'specialites', component: SpecialitesComponent },
+       { path: 'justificatifs', component: JustificatifsComponent },
+      
+      //{ path: 'paiements', component: AdminPaiementsComponent },
       
     ]
   },

@@ -1,365 +1,352 @@
-// paiements-medecin.component.ts
+// pages/utilisateurs/utilisateurs.component.ts
 import { Component, OnInit } from '@angular/core';
+import { AdminService } from '../../services/admin.service';
 
-interface Paiement {
+export interface User {
   id: number;
-  referenceRdv: string;
-  referencePaiement: string;
-  patientNom: string;
-  patientPrenom: string;
-  montant: number;
-  datePaiement: string;
-  typePaiement: 'en_ligne' | 'cabinet';
-  statut: 'en_attente' | 'paye' | 'rembourse' | 'annule';
-  methodePaiement: 'carte_bancaire' | 'mobile_money' | 'especes' | 'cheque';
-  dateRendezVous: string;
-  heureRendezVous: string;
-  motif: string;
-}
-
-interface StatistiquesPaiement {
-  totalMois: number;
-  totalEnLigne: number;
-  totalCabinet: number;
-  nombrePaiements: number;
-  nombreRemboursements: number;
-  tauxPaiementEnLigne: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  role: 'patient' | 'doctor' | 'admin';
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  lastLogin?: Date;
+  specialty?: string;
+  appointmentsCount?: number;
 }
 
 @Component({
-  selector: 'app-paiements',
-  templateUrl: './paiements.component.html',
-  styleUrl: './paiements.component.css'
+  selector: 'app-utilisateurs',
+  templateUrl: './utilisateurs.component.html',
+  styleUrls: ['./utilisateurs.component.css']
 })
-export class PaiementsComponent implements OnInit {
-
-  // Filtres
-  filtreStatut: string = 'tous';
-  filtreType: string = 'tous';
-  filtreDateDebut: string = '';
-  filtreDateFin: string = '';
-  filtreMois: string = '';
-
-  // Variables pour l'affichage
-  viewMode: 'liste' | 'stats' = 'liste';
-  
-  // Données des paiements
-  paiements: Paiement[] = [
+export class UtilisateursComponent implements OnInit {
+  users: User[] = [
     {
       id: 1,
-      referenceRdv: 'RDV-2025-001',
-      referencePaiement: 'PAY-001-2025',
-      patientNom: 'Diallo',
-      patientPrenom: 'Aminata',
-      montant: 15000,
-      datePaiement: '2025-09-01',
-      typePaiement: 'en_ligne',
-      statut: 'paye',
-      methodePaiement: 'carte_bancaire',
-      dateRendezVous: '2025-09-02',
-      heureRendezVous: '09:00',
-      motif: 'Consultation générale'
+      email: 'dr.martin@medicapp.com',
+      firstName: 'Jean',
+      lastName: 'Martin',
+      phone: '+33123456789',
+      role: 'doctor',
+      isActive: true,
+      createdAt: new Date('2023-01-15'),
+      updatedAt: new Date('2024-12-01'),
+      lastLogin: new Date('2024-12-02'),
+      specialty: 'Cardiologie',
+      appointmentsCount: 45
     },
     {
       id: 2,
-      referenceRdv: 'RDV-2025-002',
-      referencePaiement: 'PAY-002-2025',
-      patientNom: 'Ba',
-      patientPrenom: 'Moussa',
-      montant: 25000,
-      datePaiement: '2025-09-01',
-      typePaiement: 'cabinet',
-      statut: 'paye',
-      methodePaiement: 'especes',
-      dateRendezVous: '2025-09-02',
-      heureRendezVous: '10:30',
-      motif: 'Suivi cardiologique'
+      email: 'marie.dupont@email.com',
+      firstName: 'Marie',
+      lastName: 'Dupont',
+      phone: '+33987654321',
+      role: 'patient',
+      isActive: true,
+      createdAt: new Date('2023-03-22'),
+      updatedAt: new Date('2024-11-30'),
+      lastLogin: new Date('2024-12-01'),
+      appointmentsCount: 8
     },
     {
       id: 3,
-      referenceRdv: 'RDV-2025-003',
-      referencePaiement: 'PAY-003-2025',
-      patientNom: 'Ndiaye',
-      patientPrenom: 'Fatou',
-      montant: 20000,
-      datePaiement: '2025-08-30',
-      typePaiement: 'en_ligne',
-      statut: 'paye',
-      methodePaiement: 'mobile_money',
-      dateRendezVous: '2025-09-03',
-      heureRendezVous: '14:00',
-      motif: 'Consultation dermatologique'
+      email: 'dr.laurent@medicapp.com',
+      firstName: 'Sophie',
+      lastName: 'Laurent',
+      phone: '+33654321987',
+      role: 'doctor',
+      isActive: true,
+      createdAt: new Date('2023-06-10'),
+      updatedAt: new Date('2024-12-02'),
+      lastLogin: new Date('2024-12-02'),
+      specialty: 'Dermatologie',
+      appointmentsCount: 32
     },
     {
       id: 4,
-      referenceRdv: 'RDV-2025-004',
-      referencePaiement: 'PAY-004-2025',
-      patientNom: 'Fall',
-      patientPrenom: 'Omar',
-      montant: 18000,
-      datePaiement: '2025-08-28',
-      typePaiement: 'en_ligne',
-      statut: 'rembourse',
-      methodePaiement: 'carte_bancaire',
-      dateRendezVous: '2025-08-29',
-      heureRendezVous: '16:00',
-      motif: 'Consultation annulée'
+      email: 'admin@medicapp.com',
+      firstName: 'Admin',
+      lastName: 'Système',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date('2023-01-01'),
+      updatedAt: new Date('2024-12-02'),
+      lastLogin: new Date('2024-12-02')
     },
     {
       id: 5,
-      referenceRdv: 'RDV-2025-005',
-      referencePaiement: '',
-      patientNom: 'Sarr',
-      patientPrenom: 'Aïssatou',
-      montant: 22000,
-      datePaiement: '',
-      typePaiement: 'cabinet',
-      statut: 'en_attente',
-      methodePaiement: 'especes',
-      dateRendezVous: '2025-09-04',
-      heureRendezVous: '11:00',
-      motif: 'Consultation pédiatrique'
+      email: 'paul.bernard@email.com',
+      firstName: 'Paul',
+      lastName: 'Bernard',
+      phone: '+33147258369',
+      role: 'patient',
+      isActive: false,
+      createdAt: new Date('2023-08-14'),
+      updatedAt: new Date('2024-10-15'),
+      lastLogin: new Date('2024-10-10'),
+      appointmentsCount: 3
     }
   ];
+  
+  filteredUsers: User[] = [];
+  currentPage = 1;
+  totalPages = 1;
+  totalUsers = 0;
+  itemsPerPage = 10;
+  isLoading = false;
+  
+  // Filtres
+  searchTerm = '';
+  selectedRole = '';
+  selectedStatus = '';
+  sortBy = 'name';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  
+  // Modal
+  showModal = false;
+  showDeleteModal = false;
+  modalMode: 'view' | 'edit' | 'create' = 'view';
+  selectedUser: User | null = null;
+  userToDelete: User | null = null;
+  
+  roles = [
+    { value: '', label: 'Tous les rôles' },
+    { value: 'patient', label: 'Patients' },
+    { value: 'doctor', label: 'Médecins' },
+    { value: 'admin', label: 'Administrateurs' }
+  ];
+  
+  statuses = [
+    { value: '', label: 'Tous les statuts' },
+    { value: 'active', label: 'Actifs' },
+    { value: 'inactive', label: 'Inactifs' }
+  ];
 
-  // Statistiques calculées
-  statistiques: StatistiquesPaiement = {
-    totalMois: 0,
-    totalEnLigne: 0,
-    totalCabinet: 0,
-    nombrePaiements: 0,
-    nombreRemboursements: 0,
-    tauxPaiementEnLigne: 0
-  };
-
-  // Données pour les graphiques
-  donneesGraphique: any[] = [];
+  constructor(private adminService: AdminService) { }
 
   ngOnInit(): void {
-    this.calculerStatistiques();
-    this.preparerDonneesGraphique();
-    this.definirMoisActuel();
+    this.totalUsers = this.users.length;
+    this.applyFilters();
   }
 
-  definirMoisActuel(): void {
-    const aujourdhui = new Date();
-    this.filtreMois = `${aujourdhui.getFullYear()}-${(aujourdhui.getMonth() + 1).toString().padStart(2, '0')}`;
-  }
+  applyFilters(): void {
+    let filtered = [...this.users];
 
-  // Calcul des statistiques
-  calculerStatistiques(): void {
-    const paiementsValides = this.paiements.filter(p => p.statut === 'paye');
-    const paiementsEnLigne = paiementsValides.filter(p => p.typePaiement === 'en_ligne');
-    const paiementsCabinet = paiementsValides.filter(p => p.typePaiement === 'cabinet');
-    const remboursements = this.paiements.filter(p => p.statut === 'rembourse');
-
-    this.statistiques = {
-      totalMois: paiementsValides.reduce((sum, p) => sum + p.montant, 0),
-      totalEnLigne: paiementsEnLigne.reduce((sum, p) => sum + p.montant, 0),
-      totalCabinet: paiementsCabinet.reduce((sum, p) => sum + p.montant, 0),
-      nombrePaiements: paiementsValides.length,
-      nombreRemboursements: remboursements.length,
-      tauxPaiementEnLigne: paiementsValides.length > 0 ? 
-        (paiementsEnLigne.length / paiementsValides.length) * 100 : 0
-    };
-  }
-
-  // Préparation des données pour les graphiques
-  preparerDonneesGraphique(): void {
-    const paiementsParJour = new Map();
-    
-    this.paiements
-      .filter(p => p.statut === 'paye' && p.datePaiement)
-      .forEach(p => {
-        const date = new Date(p.datePaiement).toLocaleDateString('fr-FR');
-        if (paiementsParJour.has(date)) {
-          paiementsParJour.set(date, paiementsParJour.get(date) + p.montant);
-        } else {
-          paiementsParJour.set(date, p.montant);
-        }
-      });
-
-    this.donneesGraphique = Array.from(paiementsParJour.entries())
-      .map(([date, montant]) => ({ date, montant }))
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }
-
-  // Filtrage des paiements
-  get paiementsFiltres(): Paiement[] {
-    let filtered = [...this.paiements];
-
-    if (this.filtreStatut !== 'tous') {
-      filtered = filtered.filter(p => p.statut === this.filtreStatut);
+    // Filtre de recherche
+    if (this.searchTerm) {
+      const searchLower = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(user => 
+        user.firstName.toLowerCase().includes(searchLower) ||
+        user.lastName.toLowerCase().includes(searchLower) ||
+        user.email.toLowerCase().includes(searchLower) ||
+        (user.phone && user.phone.includes(this.searchTerm))
+      );
     }
 
-    if (this.filtreType !== 'tous') {
-      filtered = filtered.filter(p => p.typePaiement === this.filtreType);
+    // Filtre par rôle
+    if (this.selectedRole) {
+      filtered = filtered.filter(user => user.role === this.selectedRole);
     }
 
-    if (this.filtreDateDebut) {
-      filtered = filtered.filter(p => p.datePaiement && p.datePaiement >= this.filtreDateDebut);
+    // Filtre par statut
+    if (this.selectedStatus) {
+      if (this.selectedStatus === 'active') {
+        filtered = filtered.filter(user => user.isActive);
+      } else if (this.selectedStatus === 'inactive') {
+        filtered = filtered.filter(user => !user.isActive);
+      }
     }
 
-    if (this.filtreDateFin) {
-      filtered = filtered.filter(p => p.datePaiement && p.datePaiement <= this.filtreDateFin);
-    }
+    // Tri
+    filtered.sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
 
-    if (this.filtreMois) {
-      filtered = filtered.filter(p => {
-        if (!p.datePaiement) return false;
-        const paiementMois = p.datePaiement.substring(0, 7);
-        return paiementMois === this.filtreMois;
-      });
-    }
+      switch (this.sortBy) {
+        case 'name':
+          aValue = `${a.firstName} ${a.lastName}`.toLowerCase();
+          bValue = `${b.firstName} ${b.lastName}`.toLowerCase();
+          break;
+        case 'email':
+          aValue = a.email.toLowerCase();
+          bValue = b.email.toLowerCase();
+          break;
+        case 'role':
+          aValue = a.role;
+          bValue = b.role;
+          break;
+        case 'createdAt':
+          aValue = new Date(a.createdAt).getTime();
+          bValue = new Date(b.createdAt).getTime();
+          break;
+        default:
+          aValue = a.id;
+          bValue = b.id;
+      }
 
-    return filtered.sort((a, b) => {
-      if (!a.datePaiement && !b.datePaiement) return 0;
-      if (!a.datePaiement) return 1;
-      if (!b.datePaiement) return -1;
-      return new Date(b.datePaiement).getTime() - new Date(a.datePaiement).getTime();
+      if (aValue < bValue) return this.sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
     });
+
+    this.filteredUsers = filtered;
+    this.totalPages = Math.ceil(this.filteredUsers.length / this.itemsPerPage);
   }
 
-  // Changement de vue
-  setViewMode(mode: 'liste' | 'stats'): void {
-    this.viewMode = mode;
+  onSearchChange(): void {
+    this.currentPage = 1;
+    this.applyFilters();
   }
 
-  // Actions sur les paiements
-  rembourserPaiement(paiement: Paiement): void {
-    if (confirm(`Êtes-vous sûr de vouloir rembourser le paiement de ${paiement.montant} FCFA ?`)) {
-      paiement.statut = 'rembourse';
-      this.calculerStatistiques();
-      console.log(`Paiement ${paiement.id} remboursé`);
-      // Appel API pour traiter le remboursement
+  onFilterChange(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  sort(column: string): void {
+    if (this.sortBy === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = column;
+      this.sortDirection = 'asc';
+    }
+    this.applyFilters();
+  }
+
+  getPaginatedUsers(): User[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.filteredUsers.slice(startIndex, endIndex);
+  }
+
+  viewUser(user: User): void {
+    this.selectedUser = { ...user };
+    this.modalMode = 'view';
+    this.showModal = true;
+  }
+
+  editUser(user: User): void {
+    this.selectedUser = { ...user };
+    this.modalMode = 'edit';
+    this.showModal = true;
+  }
+
+  createUser(): void {
+    this.selectedUser = {
+      id: 0,
+      email: '',
+      firstName: '',
+      lastName: '',
+      phone: '',
+      role: 'patient',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.modalMode = 'create';
+    this.showModal = true;
+  }
+
+  saveUser(): void {
+    if (!this.selectedUser) return;
+
+    if (this.modalMode === 'create') {
+      // Simulation de création
+      this.selectedUser.id = Math.max(...this.users.map(u => u.id)) + 1;
+      this.users.push({ ...this.selectedUser });
+    } else if (this.modalMode === 'edit') {
+      // Simulation de mise à jour
+      const index = this.users.findIndex(u => u.id === this.selectedUser!.id);
+      if (index > -1) {
+        this.users[index] = { ...this.selectedUser };
+      }
+    }
+
+    this.applyFilters();
+    this.closeModal();
+  }
+
+  confirmDelete(user: User): void {
+    this.userToDelete = user;
+    this.showDeleteModal = true;
+  }
+
+  deleteUser(): void {
+    if (this.userToDelete) {
+      this.users = this.users.filter(u => u.id !== this.userToDelete!.id);
+      this.applyFilters();
+      this.closeDeleteModal();
     }
   }
 
-  annulerPaiement(paiement: Paiement): void {
-    if (confirm(`Êtes-vous sûr de vouloir annuler ce paiement ?`)) {
-      paiement.statut = 'annule';
-      this.calculerStatistiques();
-      console.log(`Paiement ${paiement.id} annulé`);
-      // Appel API pour annuler le paiement
-    }
+  toggleUserStatus(user: User): void {
+    user.isActive = !user.isActive;
+    user.updatedAt = new Date();
+    this.applyFilters();
   }
 
-  // Téléchargement du reçu
-  telechargerRecu(paiement: Paiement): void {
-    console.log(`Téléchargement du reçu pour paiement ${paiement.id}`);
-    const contenu = this.genererContenuRecu(paiement);
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(contenu));
-    element.setAttribute('download', `recu-${paiement.referencePaiement || paiement.referenceRdv}.txt`);
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+  closeModal(): void {
+    this.showModal = false;
+    this.selectedUser = null;
   }
 
-  private genererContenuRecu(paiement: Paiement): string {
-    return `
-REÇU DE PAIEMENT
-================
-
-Référence Paiement: ${paiement.referencePaiement || 'N/A'}
-Référence RDV: ${paiement.referenceRdv}
-Date d'émission: ${new Date().toLocaleDateString('fr-FR')}
-
-PATIENT:
-${paiement.patientPrenom} ${paiement.patientNom}
-
-RENDEZ-VOUS:
-Date: ${new Date(paiement.dateRendezVous).toLocaleDateString('fr-FR')}
-Heure: ${paiement.heureRendezVous}
-Motif: ${paiement.motif}
-
-PAIEMENT:
-Montant: ${paiement.montant} FCFA
-Type: ${paiement.typePaiement === 'en_ligne' ? 'Paiement en ligne' : 'Paiement au cabinet'}
-Méthode: ${this.getMethodePaiementLabel(paiement.methodePaiement)}
-Date: ${paiement.datePaiement ? new Date(paiement.datePaiement).toLocaleDateString('fr-FR') : 'En attente'}
-Statut: ${this.getStatutLabel(paiement.statut)}
-
-Merci pour votre confiance.
-    `.trim();
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.userToDelete = null;
   }
 
-  // Export des données
-  exporterDonnees(): void {
-    const donneesExport = this.paiementsFiltres.map(p => ({
-      'Référence RDV': p.referenceRdv,
-      'Référence Paiement': p.referencePaiement || 'N/A',
-      'Patient': `${p.patientPrenom} ${p.patientNom}`,
-      'Montant': p.montant,
-      'Date Paiement': p.datePaiement || 'En attente',
-      'Type': p.typePaiement === 'en_ligne' ? 'En ligne' : 'Cabinet',
-      'Statut': this.getStatutLabel(p.statut),
-      'Méthode': this.getMethodePaiementLabel(p.methodePaiement)
-    }));
-
-    const csvContent = this.convertirEnCSV(donneesExport);
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent));
-    element.setAttribute('download', `paiements-${new Date().toISOString().split('T')[0]}.csv`);
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+  onPageChange(page: number): void {
+    this.currentPage = page;
   }
 
-  private convertirEnCSV(data: any[]): string {
-    if (data.length === 0) return '';
-    
-    const headers = Object.keys(data[0]);
-    const csvHeaders = headers.join(',');
-    const csvRows = data.map(row => 
-      headers.map(header => `"${row[header]}"`).join(',')
-    );
-    
-    return [csvHeaders, ...csvRows].join('\n');
+  getStatusText(status: boolean): string {
+    return status ? 'Actif' : 'Inactif';
   }
 
-  // Utilitaires
-  getStatutClass(statut: string): string {
-    switch (statut) {
-      case 'en_attente': return 'statut-attente';
-      case 'paye': return 'statut-paye';
-      case 'rembourse': return 'statut-rembourse';
-      case 'annule': return 'statut-annule';
-      default: return '';
-    }
+  getStatusColor(status: boolean): string {
+    return status ? '#27ae60' : '#95a5a6';
   }
 
-  getStatutLabel(statut: string): string {
-    switch (statut) {
-      case 'en_attente': return 'En attente';
-      case 'paye': return 'Payé';
-      case 'rembourse': return 'Remboursé';
-      case 'annule': return 'Annulé';
-      default: return statut;
-    }
+  getRoleText(role: string): string {
+  const roleTexts: { [key: string]: string } = {
+    patient: 'Patient',
+    doctor: 'Médecin',
+    admin: 'Administrateur'
+  };
+  return roleTexts[role] || role;
+}
+
+  getRoleColor(role: string): string {
+  const roleColors: { [key: string]: string } = {
+    patient: '#3498db',
+    doctor: '#e74c3c',
+    admin: '#f39c12'
+  };
+  return roleColors[role] || '#95a5a6';
+}
+
+
+  formatDate(date: Date | string): string {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return new Intl.DateTimeFormat('fr-FR', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }).format(dateObj);
   }
 
-  getMethodePaiementLabel(methode: string): string {
-    switch (methode) {
-      case 'carte_bancaire': return 'Carte bancaire';
-      case 'mobile_money': return 'Mobile Money';
-      case 'especes': return 'Espèces';
-      case 'cheque': return 'Chèque';
-      default: return methode;
-    }
+  isFormValid(): boolean {
+    return !!(this.selectedUser?.email && 
+             this.selectedUser?.firstName && 
+             this.selectedUser?.lastName &&
+             this.isValidEmail(this.selectedUser.email));
   }
 
-  getTypeClass(type: string): string {
-    return type === 'en_ligne' ? 'type-enligne' : 'type-cabinet';
-  }
-
-  // Actualisation des données
-  actualiserDonnees(): void {
-    console.log('Actualisation des données...');
-    this.calculerStatistiques();
-    this.preparerDonneesGraphique();
-    // Appel API pour recharger les données
+  isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 }
